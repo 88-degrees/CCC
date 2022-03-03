@@ -19,7 +19,6 @@ import com.github.mustafaozhan.config.model.AppConfig
 import com.github.mustafaozhan.config.model.AppReview
 import com.github.mustafaozhan.config.model.AppUpdate
 import com.github.mustafaozhan.logmob.initLogger
-import com.github.mustafaozhan.scopemob.castTo
 import io.mockative.Mock
 import io.mockative.any
 import io.mockative.classOf
@@ -31,6 +30,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -222,7 +222,7 @@ class MainViewModelTest {
             assertEquals(true, data.adVisibility)
             assertEquals(true, data.adJob.isActive)
 
-            assertTrue { it is MainEffect.ShowInterstitialAd }
+            assertIs<MainEffect.ShowInterstitialAd>(it)
 
             data.adJob.cancel()
             assertEquals(false, data.adJob.isActive)
@@ -303,8 +303,8 @@ class MainViewModelTest {
         viewModel.effect.before {
             viewModel.onResume()
         }.after {
-            assertTrue { it is MainEffect.AppUpdateEffect }
-            assertTrue { it?.castTo<MainEffect.AppUpdateEffect>()?.isCancelable == mockBoolean }
+            assertIs<MainEffect.AppUpdateEffect>(it)
+            assertTrue { it.isCancelable == mockBoolean }
             assertTrue { viewModel.data.isAppUpdateShown }
         }
 
@@ -345,7 +345,7 @@ class MainViewModelTest {
             effect.before {
                 onResume()
             }.after {
-                assertTrue { it is MainEffect.RequestReview }
+                assertIs<MainEffect.RequestReview>(it)
             }
 
             verify(sessionManager)

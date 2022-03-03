@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import com.github.mustafaozhan.ccc.common.model.Currency as CurrencyCommon
 
@@ -115,7 +116,8 @@ class ChangeBaseViewModelTest {
         viewModel.effect.before {
             viewModel.event.onItemClick(currencyUIModel)
         }.after {
-            assertEquals(ChangeBaseEffect.BaseChange(currencyUIModel.name), it)
+            assertIs<ChangeBaseEffect.BaseChange>(it)
+            assertEquals(currencyUIModel.name, it.newBase)
         }
     }
 
@@ -124,7 +126,7 @@ class ChangeBaseViewModelTest {
         viewModel.effect.before {
             viewModel.event.onSelectClick()
         }.after {
-            assertEquals(ChangeBaseEffect.OpenCurrencies, it)
+            assertIs<ChangeBaseEffect.OpenCurrencies>(it)
         }
     }
 }

@@ -27,7 +27,7 @@ import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 import com.github.mustafaozhan.ccc.client.model.Currency as ClientCurrency
 import com.github.mustafaozhan.ccc.common.model.Currency as CommonCurrency
 
@@ -247,7 +247,7 @@ class CurrenciesViewModelTest {
         viewModel.effect.before {
             viewModel.onCloseClick()
         }.after {
-            assertTrue { it is CurrenciesEffect.Back }
+            assertIs<CurrenciesEffect.Back>(it)
             assertEquals("", viewModel.data.query)
         }
 
@@ -269,7 +269,7 @@ class CurrenciesViewModelTest {
         viewModel.effect.before {
             viewModel.onDoneClick()
         }.after {
-            assertTrue { it is CurrenciesEffect.FewCurrency }
+            assertIs<CurrenciesEffect.FewCurrency>(it)
         }
 
         // given
@@ -278,7 +278,7 @@ class CurrenciesViewModelTest {
         viewModel.effect.before {
             viewModel.onDoneClick()
         }.after {
-            assertTrue { it is CurrenciesEffect.OpenCalculator }
+            assertIs<CurrenciesEffect.OpenCalculator>(it)
 
             verify(settingsRepository)
                 .invocation { firstRun = false }

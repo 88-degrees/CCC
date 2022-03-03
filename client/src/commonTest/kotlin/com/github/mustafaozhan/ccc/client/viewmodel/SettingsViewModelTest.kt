@@ -36,6 +36,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
@@ -133,7 +134,8 @@ class SettingsViewModelTest {
                 updateTheme(mockTheme)
             }.after {
                 assertEquals(mockTheme, state.value.appThemeType)
-                assertEquals(SettingsEffect.ChangeTheme(mockTheme.themeValue), it)
+                assertIs<SettingsEffect.ChangeTheme>(it)
+                assertEquals(mockTheme.themeValue, it.themeValue)
             }
         }
 
@@ -148,7 +150,7 @@ class SettingsViewModelTest {
         viewModel.effect.before {
             viewModel.event.onRemoveAdsClick()
         }.after {
-            assertTrue { it is SettingsEffect.AlreadyAdFree }
+            assertIs<SettingsEffect.AlreadyAdFree>(it)
         }
 
         verify(settingsRepository)
@@ -240,42 +242,42 @@ class SettingsViewModelTest {
     fun onBackClick() = viewModel.effect.before {
         viewModel.event.onBackClick()
     }.after {
-        assertTrue { it is SettingsEffect.Back }
+        assertIs<SettingsEffect.Back>(it)
     }
 
     @Test
     fun onCurrenciesClick() = viewModel.effect.before {
         viewModel.event.onCurrenciesClick()
     }.after {
-        assertTrue { it is SettingsEffect.OpenCurrencies }
+        assertIs<SettingsEffect.OpenCurrencies>(it)
     }
 
     @Test
     fun onFeedBackClick() = viewModel.effect.before {
         viewModel.event.onFeedBackClick()
     }.after {
-        assertTrue { it is SettingsEffect.FeedBack }
+        assertIs<SettingsEffect.FeedBack>(it)
     }
 
     @Test
     fun onShareClick() = viewModel.effect.before {
         viewModel.event.onShareClick()
     }.after {
-        assertTrue { it is SettingsEffect.Share }
+        assertIs<SettingsEffect.Share>(it)
     }
 
     @Test
     fun onSupportUsClick() = viewModel.effect.before {
         viewModel.event.onSupportUsClick()
     }.after {
-        assertTrue { it is SettingsEffect.SupportUs }
+        assertIs<SettingsEffect.SupportUs>(it)
     }
 
     @Test
     fun onOnGitHubClick() = viewModel.effect.before {
         viewModel.event.onOnGitHubClick()
     }.after {
-        assertTrue { it is SettingsEffect.OnGitHub }
+        assertIs<SettingsEffect.OnGitHub>(it)
     }
 
     @Test
@@ -283,7 +285,7 @@ class SettingsViewModelTest {
         viewModel.effect.before {
             viewModel.event.onRemoveAdsClick()
         }.after {
-            assertTrue { it is SettingsEffect.RemoveAds }
+            assertIs<SettingsEffect.RemoveAds>(it)
         }
 
         verify(settingsRepository)
@@ -295,7 +297,7 @@ class SettingsViewModelTest {
     fun onThemeClick() = viewModel.effect.before {
         viewModel.event.onThemeClick()
     }.after {
-        assertTrue { it is SettingsEffect.ThemeDialog }
+        assertIs<SettingsEffect.ThemeDialog>(it)
     }
 
     @Test
@@ -309,14 +311,14 @@ class SettingsViewModelTest {
             viewModel.event.onSyncClick()
         }.after {
             assertTrue { viewModel.state.value.loading }
-            assertTrue { it is SettingsEffect.Synchronising }
+            assertIs<SettingsEffect.Synchronising>(it)
         }
 
         viewModel.effect.before {
             viewModel.event.onSyncClick()
         }.after {
             assertTrue { viewModel.data.synced }
-            assertTrue { it is SettingsEffect.OnlyOneTimeSync }
+            assertIs<SettingsEffect.OnlyOneTimeSync>(it)
         }
     }
 }

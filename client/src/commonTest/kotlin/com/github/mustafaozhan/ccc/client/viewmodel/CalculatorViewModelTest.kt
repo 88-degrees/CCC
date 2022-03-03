@@ -32,6 +32,7 @@ import kotlin.random.Random
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 class CalculatorViewModelTest {
@@ -116,14 +117,14 @@ class CalculatorViewModelTest {
     fun onBarClick() = viewModel.effect.before {
         viewModel.event.onBarClick()
     }.after {
-        assertEquals(CalculatorEffect.OpenBar, it)
+        assertIs<CalculatorEffect.OpenBar>(it)
     }
 
     @Test
     fun onSettingsClicked() = viewModel.effect.before {
         viewModel.event.onSettingsClicked()
     }.after {
-        assertEquals(CalculatorEffect.OpenSettings, it)
+        assertIs<CalculatorEffect.OpenSettings>(it)
     }
 
     @Test
@@ -138,16 +139,15 @@ class CalculatorViewModelTest {
     fun onItemLongClick() = viewModel.effect.before {
         viewModel.event.onItemLongClick(currencyUIModel)
     }.after {
+        assertIs<CalculatorEffect.ShowRate>(it)
         assertEquals(
-            CalculatorEffect.ShowRate(
-                currencyUIModel.getCurrencyConversionByRate(
-                    viewModel.state.value.base,
-                    viewModel.data.rates
-                ),
-                currencyUIModel.name
+            currencyUIModel.getCurrencyConversionByRate(
+                viewModel.state.value.base,
+                viewModel.data.rates
             ),
-            it
+            it.text
         )
+        assertEquals(currencyUIModel.name, it.name)
     }
 
     @Test
