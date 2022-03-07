@@ -13,14 +13,14 @@ import com.github.mustafaozhan.ccc.client.viewmodel.main.MainEffect
 import com.github.mustafaozhan.ccc.client.viewmodel.main.MainViewModel
 import com.github.mustafaozhan.ccc.common.settings.SettingsRepository
 import com.github.mustafaozhan.ccc.common.util.nowAsLong
-import com.github.mustafaozhan.config.ConfigManager
-import com.github.mustafaozhan.config.model.AdConfig
-import com.github.mustafaozhan.config.model.AppConfig
-import com.github.mustafaozhan.config.model.AppReview
-import com.github.mustafaozhan.config.model.AppUpdate
 import com.github.mustafaozhan.logmob.initLogger
+import com.github.mustafaozhan.scopemob.castTo
+import com.oztechan.ccc.config.ConfigManager
+import com.oztechan.ccc.config.model.AdConfig
+import com.oztechan.ccc.config.model.AppConfig
+import com.oztechan.ccc.config.model.AppReview
+import com.oztechan.ccc.config.model.AppUpdate
 import io.mockative.Mock
-import io.mockative.any
 import io.mockative.classOf
 import io.mockative.given
 import io.mockative.mock
@@ -155,8 +155,11 @@ class MainViewModelTest {
             .then { mockSessionCount }
 
         given(sessionManager)
-            .function(sessionManager::checkAppUpdate)
-            .whenInvokedWith(any())
+            .invocation { checkAppUpdate(false) }
+            .thenReturn(false)
+
+        given(sessionManager)
+            .invocation { checkAppUpdate(true) }
             .thenReturn(false)
 
         given(sessionManager)
@@ -200,8 +203,7 @@ class MainViewModelTest {
             .then { mockSessionCount }
 
         given(sessionManager)
-            .function(sessionManager::checkAppUpdate)
-            .whenInvokedWith(any())
+            .invocation { checkAppUpdate(false) }
             .thenReturn(null)
 
         given(sessionManager)
@@ -334,8 +336,7 @@ class MainViewModelTest {
                 .then { mockSessionCount }
 
             given(sessionManager)
-                .function(sessionManager::checkAppUpdate)
-                .whenInvokedWith(any())
+                .invocation { checkAppUpdate(false) }
                 .thenReturn(null)
 
             given(sessionManager)
@@ -373,8 +374,7 @@ class MainViewModelTest {
                 .then { mockSessionCount }
 
             given(sessionManager)
-                .function(sessionManager::checkAppUpdate)
-                .whenInvokedWith(any())
+                .invocation { checkAppUpdate(false) }
                 .thenReturn(null)
 
             given(sessionManager)

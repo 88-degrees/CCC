@@ -187,8 +187,7 @@ class SettingsViewModelTest {
     @Test
     fun isAdFreeNeverActivated_returns_false_when_adFreeEndDate_is_not_zero() {
         given(settingsRepository)
-            .getter(settingsRepository::adFreeEndDate)
-            .whenInvoked()
+            .invocation { adFreeEndDate }
             .thenReturn(1)
 
         assertFalse { viewModel.isAdFreeNeverActivated() }
@@ -201,8 +200,7 @@ class SettingsViewModelTest {
     @Test
     fun isAdFreeNeverActivated_returns_true_when_adFreeEndDate_is_zero() {
         given(settingsRepository)
-            .getter(settingsRepository::adFreeEndDate)
-            .whenInvoked()
+            .invocation { adFreeEndDate }
             .thenReturn(0)
 
         assertTrue { viewModel.isAdFreeNeverActivated() }
