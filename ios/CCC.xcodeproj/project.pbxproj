@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		15A796074B10DEA83142F40F /* Pods_CCC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 341CA58575E08166F616E331 /* Pods_CCC.framework */; };
+		29AC46AB27DA488300635FAA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 29AC46AA27DA488300635FAA /* GoogleService-Info.plist */; };
 		5C039FD625C1B705008350A3 /* FormProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C039FD525C1B705008350A3 /* FormProgressView.swift */; };
 		5C17581A25BC74BD00D16BD9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C17581925BC74BD00D16BD9 /* SettingsView.swift */; };
 		5C314CBE25BA0AC0007B22D8 /* CurrenciesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C314CBD25BA0AC0007B22D8 /* CurrenciesView.swift */; };
@@ -19,7 +20,6 @@
 		5C693EBA25C4AFF800C9373E /* SelectCurrencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C693EB925C4AFF800C9373E /* SelectCurrencyView.swift */; };
 		5C6E674025C5A711001CC0D6 /* SliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6E673F25C5A711001CC0D6 /* SliderView.swift */; };
 		5C6E674D25C602BE001CC0D6 /* SnackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6E674C25C602BE001CC0D6 /* SnackBar.swift */; };
-		5C8EB4A9260CB5E200DC4A90 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5C8EB4A8260CB5E200DC4A90 /* GoogleService-Info.plist */; };
 		5C8FDBDD25BF3FBE00F280FF /* ObservableSEED.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C8FDBDC25BF3FBE00F280FF /* ObservableSEED.swift */; };
 		5C9A59BB25C350DE006745B0 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9A59BA25C350DE006745B0 /* MainView.swift */; };
 		5C9C75C82603A36A00D66FDD /* ToolbarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9C75C72603A36A00D66FDD /* ToolbarButton.swift */; };
@@ -45,6 +45,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		29AC46AA27DA488300635FAA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		341CA58575E08166F616E331 /* Pods_CCC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CCC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C039FD525C1B705008350A3 /* FormProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormProgressView.swift; sourceTree = "<group>"; };
 		5C17581925BC74BD00D16BD9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -156,6 +157,7 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				29AC46AA27DA488300635FAA /* GoogleService-Info.plist */,
 				7555FF7D242A565900829871 /* CCC */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
@@ -273,8 +275,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7555FF88242A565B00829871 /* Preview Assets.xcassets in Resources */,
+				29AC46AB27DA488300635FAA /* GoogleService-Info.plist in Resources */,
 				7555FF85242A565B00829871 /* Assets.xcassets in Resources */,
-				5C8EB4A9260CB5E200DC4A90 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -524,7 +526,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = TenetAi.in;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -548,7 +550,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = orgIdentifier.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = TenetAi.in;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
