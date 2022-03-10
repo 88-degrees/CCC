@@ -4,10 +4,6 @@
 
 A currency converter application for most of the currencies used in the world.
 
-You can quickly convert and make mathematical operations between currencies.
-
-<a href="https://play.google.com/store/apps/details?id=mustafaozhan.github.com.mycurrencies"><img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="250px"></a>
-
 <a href="https://github.com/Oztechan/CCC/actions/workflows/main.yml"><img src="https://github.com/CurrencyConverterCalculator/CCC/workflows/CCC%20CI/badge.svg"></a>
 <a href="https://www.codacy.com/gh/Oztechan/CCC/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CurrencyConverterCalculator/CCC&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/2196f4447c32431b80d582a21ad749db"/></a>
 <a href="https://codecov.io/gh/Oztechan/CCC"><img src="https://codecov.io/gh/Oztechan/CCC/branch/develop/graph/badge.svg?token=Lenq2MZgM7"/></a>
@@ -18,18 +14,6 @@ You can quickly convert and make mathematical operations between currencies.
 <a href="https://github.com/Oztechan/CCC/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed-raw/Oztechan/CCC?label=Closed%20PR&color=white"></a>
 <a href="https://github.com/Oztechan/CCC/issues?q=is%3Aopen"><img src="https://img.shields.io/github/issues-raw/Oztechan/CCC?label=Open%20Issue&color=green-light"></a>
 <a href="https://github.com/Oztechan/CCC/issues?q=is%3Aclosed"><img src="https://img.shields.io/github/issues-closed-raw/Oztechan/CCC?label=Closed%20Issue&color=white"></a>
-
-<a href='https://ko-fi.com/B0B2TZMH' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-
-Main Modules | Completed | State | Tech |
-:------------ | :-------------| :-------------| :-------------|  
-![badge-android](https://img.shields.io/badge/app-android-green) | :white_check_mark:| in production :muscle: | ViewBinding (State/Shared)Flow
-![badge-backend](https://img.shields.io/badge/app-backend-blue) | :white_check_mark: | in production :muscle: | Ktor (server/client) Sqldelight
-![badge-ios](https://img.shields.io/badge/app-ios-orange) || in progress :bow: | SwiftUI Combine
-![badge-web](https://img.shields.io/badge/app-web-yellow) || coming soon :eyes: | :grey_question:
-![badge-desktop](https://img.shields.io/badge/app-desktop-red) || coming soon :eyes: | :grey_question:
-![badge-client](https://img.shields.io/badge/shared-client-white) | :white_check_mark: | used in FE targets :recycle: | KMP (android/ios)
-![badge-common](https://img.shields.io/badge/shared-common-darkgrey) | :white_check_mark: | used in all targets :recycle: | KMP (android/ios/jvm)
 
 </div>
 
@@ -142,20 +126,4 @@ module
 
 [![currencies.png](https://github.com/CurrencyConverterCalculator/CCC/raw/master/art/currencies.png)](https://github.com/CurrencyConverterCalculator/CCC/raw/master/art/currencies.png)
 
-## License
-
-```text
-Copyright 2017 Mustafa Ozhan
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+<a href="https://play.google.com/store/apps/details?id=mustafaozhan.github.com.mycurrencies"><img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="250px"></a>
