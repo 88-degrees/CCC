@@ -57,12 +57,13 @@ kotlin {
                     implementation(KOTLIN_X_DATE_TIME)
                     implementation(COROUTINES)
                     implementation(KOIN_CORE)
+                    implementation(MOKO_RESOURCES)
+                    implementation(SCOPE_MOB)
+                    implementation(PARSER_MOB)
+                    implementation(LOG_MOB)
 
                     with(Dependencies.Modules) {
                         implementation(project(COMMON))
-                        implementation(project(PARSER_MOB))
-                        implementation(project(SCOPE_MOB))
-                        implementation(project(LOG_MOB))
                         implementation(project(CONFIG))
                     }
                 }
@@ -76,17 +77,9 @@ kotlin {
             }
         }
 
-        val mobileMain by creating {
-            dependencies {
-                dependsOn(commonMain.get())
-                implementation(Dependencies.Common.MOKO_RESOURCES)
-            }
-        }
-
         with(Dependencies.Android) {
             val androidMain by getting {
                 dependencies {
-                    dependsOn(mobileMain)
                     implementation(ANDROID_MATERIAL)
                     implementation(KOIN_ANDROID)
                     implementation(LIFECYCLE_VIEWMODEL)
@@ -95,11 +88,7 @@ kotlin {
             val androidTest by getting
         }
 
-        val iosMain by getting {
-            dependencies {
-                dependsOn(mobileMain)
-            }
-        }
+        val iosMain by getting
         val iosTest by getting
     }
 }
@@ -145,8 +134,7 @@ android {
 }
 
 multiplatformResources {
-    multiplatformResourcesPackage = "${ProjectSettings.PACKAGE_NAME}.client"
-    multiplatformResourcesSourceSet = "mobileMain"
+    multiplatformResourcesPackage = "${ProjectSettings.PROJECT_ID}.client"
     disableStaticFrameworkWarning = true
 }
 
@@ -157,7 +145,7 @@ tasks.withType<KotlinCompile> {
 }
 
 configure<BuildKonfigExtension> {
-    packageName = "${ProjectSettings.PACKAGE_NAME}.client"
+    packageName = "${ProjectSettings.PROJECT_ID}.client"
 
     defaultConfigs {
         buildConfigField(INT, "versionCode", ProjectSettings.getVersionCode(project).toString())

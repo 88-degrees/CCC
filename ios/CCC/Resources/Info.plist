@@ -2,6 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<<<<<<< HEAD
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -14,6 +15,8 @@
 			<false/>
 		</dict>
 	</dict>
+=======
+>>>>>>> 270ec0c4966c28417845cc16357a89d69dcbb211
 	<key>BANNER_AD_UNIT_ID_CALCULATOR</key>
 	<string>$(BANNER_AD_UNIT_ID_CALCULATOR)</string>
 	<key>BANNER_AD_UNIT_ID_CURRENCIES</key>
@@ -199,18 +202,6 @@
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
-		<key>UISceneConfigurations</key>
-		<dict>
-			<key>UIWindowSceneSessionRoleApplication</key>
-			<array>
-				<dict>
-					<key>UISceneConfigurationName</key>
-					<string>Default Configuration</string>
-					<key>UISceneDelegateClassName</key>
-					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-				</dict>
-			</array>
-		</dict>
 	</dict>
 	<key>UILaunchScreen</key>
 	<dict>

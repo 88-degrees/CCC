@@ -4,9 +4,9 @@
 package com.oztechan.ccc.client.viewmodel.calculator
 
 import co.touchlab.kermit.Logger
-import com.github.mustafaozhan.scopemob.mapTo
-import com.github.mustafaozhan.scopemob.whether
-import com.github.mustafaozhan.scopemob.whetherNot
+import com.github.submob.scopemob.mapTo
+import com.github.submob.scopemob.whether
+import com.github.submob.scopemob.whetherNot
 import com.oztechan.ccc.client.base.BaseSEEDViewModel
 import com.oztechan.ccc.client.helper.SessionManager
 import com.oztechan.ccc.client.mapper.toRates
@@ -208,8 +208,8 @@ class CalculatorViewModel(
         )
     }
 
-    override fun onItemLongClick(currency: Currency): Boolean {
-        Logger.d { "CalculatorViewModel onItemLongClick ${currency.name}" }
+    override fun onItemImageLongClick(currency: Currency) {
+        Logger.d { "CalculatorViewModel onItemImageLongClick ${currency.name}" }
         clientScope.launch {
             _effect.emit(
                 CalculatorEffect.ShowRate(
@@ -221,7 +221,13 @@ class CalculatorViewModel(
                 )
             )
         }
-        return true
+    }
+
+    override fun onItemAmountLongClick(amount: String) {
+        Logger.d { "CalculatorViewModel onItemAmountLongClick $amount" }
+        clientScope.launch {
+            _effect.emit(CalculatorEffect.CopyToClipboard(amount))
+        }
     }
 
     override fun onBarClick() = clientScope.launchIgnored {
