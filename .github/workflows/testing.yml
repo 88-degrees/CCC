@@ -26,6 +26,7 @@ env:
   BASE_URL_API: ${{ secrets.BASE_URL_API }}
   BASE_URL_API_PREMIUM: ${{ secrets.BASE_URL_API_PREMIUM }}
   API_KEY_PREMIUM: ${{ secrets.API_KEY_PREMIUM }}
+  CI: true
 
 jobs:
   Distribute:
@@ -45,9 +46,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
-
       - name: Adding secret files
         run: |
           echo "${{ secrets.ANDROID_GPG_RELEASE_KEYSTORE }}" > release.keystore.asc
@@ -57,15 +55,23 @@ jobs:
           gpg -d --passphrase "${{ secrets.GPG_PASSWORD }}" --batch google-services.json.asc > android/src/release/google-services.json
 
       - name: Build
-        run: ./gradlew assembleGoogleRelease
+        run: ./gradlew assembleGoogleRelease assembleHuaweiRelease
 
-      - name: Firebase App Distribution
+      - name: Firebase App Distribution Google
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          appId: ${{secrets.ANDROID_FIREBASE_APP_ID}}
+          appId: ${{secrets.ANDROID_GOOGLE_FIREBASE_APP_ID}}
           token: ${{secrets.ANDROID_FIREBASE_TOKEN}}
           groups: QA
           file: android/build/outputs/apk/google/release/android-google-release.apk
+
+      - name: Firebase App Distribution Huawei
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.ANDROID_HUAWEI_FIREBASE_APP_ID}}
+          token: ${{secrets.ANDROID_FIREBASE_TOKEN}}
+          groups: QA
+          file: android/build/outputs/apk/huawei/release/android-huawei-release.apk
 
       - name: Set Job Status
         id: status

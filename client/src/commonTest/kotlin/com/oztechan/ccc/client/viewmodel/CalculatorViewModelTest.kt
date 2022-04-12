@@ -3,7 +3,7 @@
  */
 package com.oztechan.ccc.client.viewmodel
 
-import com.github.mustafaozhan.logmob.initLogger
+import com.github.submob.logmob.initLogger
 import com.oztechan.ccc.client.helper.SessionManager
 import com.oztechan.ccc.client.mapper.toUIModel
 import com.oztechan.ccc.client.util.after
@@ -117,8 +117,8 @@ class CalculatorViewModelTest {
     }
 
     @Test
-    fun onItemLongClick() = viewModel.effect.before {
-        viewModel.event.onItemLongClick(currencyUIModel)
+    fun onItemImageLongClick() = viewModel.effect.before {
+        viewModel.event.onItemImageLongClick(currencyUIModel)
     }.after {
         assertEquals(
             CalculatorEffect.ShowRate(
@@ -128,6 +128,16 @@ class CalculatorViewModelTest {
                 ),
                 currencyUIModel.name
             ),
+            it
+        )
+    }
+
+    @Test
+    fun onItemAmountLongClick() = viewModel.effect.before {
+        viewModel.event.onItemAmountLongClick(currencyUIModel.rate.toString())
+    }.after {
+        assertEquals(
+            CalculatorEffect.CopyToClipboard(currencyUIModel.rate.toString()),
             it
         )
     }

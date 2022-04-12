@@ -13,7 +13,7 @@ plugins {
 
 with(ProjectSettings) {
     application {
-        mainClass.set("$PACKAGE_NAME.backend.ApplicationKt")
+        mainClass.set("$PROJECT_ID.backend.ApplicationKt")
     }
     group = PROJECT_ID
     version = getVersionName(project)
@@ -37,11 +37,11 @@ kotlin {
 
                 with(Dependencies.Common) {
                     implementation(KOIN_CORE)
+                    implementation(LOG_MOB)
                 }
 
                 with(Dependencies.Modules) {
                     implementation(project(COMMON))
-                    implementation(project(LOG_MOB))
                 }
             }
         }
@@ -53,7 +53,11 @@ tasks.register<Jar>("fatJar") {
     manifest {
         attributes["Implementation-Title"] = "Gradle Jar File Example"
         attributes["Implementation-Version"] = ProjectSettings.getVersionName(project)
+<<<<<<< HEAD
         attributes["Main-Class"] = "${ProjectSettings.PACKAGE_NAME}.backend.ApplicationKt"
+=======
+        attributes["Main-Class"] = "${ProjectSettings.PROJECT_ID}.backend.ApplicationKt"
+>>>>>>> 270ec0c4966c28417845cc16357a89d69dcbb211
     }
     from(
         configurations.runtimeClasspath.get().map {

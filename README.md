@@ -17,16 +17,6 @@ A currency converter application for most of the currencies used in the world.
 
 </div>
 
-## How to clone
-
-The project uses submodules, please clone it as below:
-
-```shell
-git clone https://github.com/CurrencyConverterCalculator/CCC.git &&
-cd CCC &&
-git submodule update --init --recursive
-```
-
 ## How to run
 
 Be sure that you have latest Android Studio Canary build installed and XCode 13.0 or later.
@@ -66,24 +56,25 @@ override suspend fun methodXYZ(base: String) = client.get<CurrencyResponseEntity
 
 ## Module Graph
 
+After you run the app probably your all API calls will fail, it is expected since the private URLs are not shared publicly. If you want the test the app with real API calls, I have prepared a fake response. You will need to change content of the all methods in `com.oztechan.ccc.common.api.service.ApiServiceImpl` with below.
+
+```kotlin
+// you have 3 of them
+override suspend fun methodXYZ(base: String) = client.get<CurrencyResponseEntity> {
+        url {
+            takeFrom("https://gist.githubusercontent.com/mustafaozhan/fa6d05e65919085f871adc825accea46/raw/d3bf3a7771e872e0c39541fe23b4058f4ae24c41/response.json")
+        }
+    }
+```
+
+## Module Graph
+
 ```mermaid
 graph TD;
 
-logmob{logmob}-->config
-logmob-->ad
-logmob-->android
-logmob-->backend
-logmob-->billing
-logmob-->client
-logmob-->common
-
-basemob-->android
-
-scopemob{scopemob}-->client
-scopemob-->android
-scopemob-->billing
-
-parsermob{parsermob}-->client
+backend(backend)
+android(android)
+ios(ios)
 
 client{client}-->android
 client-->ios
@@ -99,10 +90,6 @@ billing-->android
 ad-->android
 
 analytics-->android
-
-backend(backend)
-android(android)
-ios(ios)
 ```
 
 ```mermaid

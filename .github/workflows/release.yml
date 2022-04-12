@@ -26,6 +26,7 @@ env:
   BASE_URL_API: ${{ secrets.BASE_URL_API }}
   BASE_URL_API_PREMIUM: ${{ secrets.BASE_URL_API_PREMIUM }}
   API_KEY_PREMIUM: ${{ secrets.API_KEY_PREMIUM }}
+  CI: true
 
 jobs:
 
@@ -39,9 +40,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
 
       - name: Adding secret files
         run: |
