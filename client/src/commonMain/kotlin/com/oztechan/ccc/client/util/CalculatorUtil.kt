@@ -11,7 +11,11 @@ import com.oztechan.ccc.client.model.Currency
 import com.oztechan.ccc.common.model.CurrencyType
 import com.oztechan.ccc.common.model.Rates
 
-expect fun Double.getFormatted(): String
+const val MAXIMUM_FLOATING_POINT = 9
+
+expect fun Double.getFormatted(precision: Int): String
+
+expect fun Double.removeScientificNotation(): String
 
 fun Rates?.calculateResult(name: String, input: String?) = this
     ?.whetherNot { input.isNullOrEmpty() }
@@ -43,9 +47,14 @@ fun Currency.getCurrencyConversionByRate(
 fun List<Currency>?.toValidList(currentBase: String) = this?.filter {
     it.name != currentBase &&
         it.isActive &&
-        it.rate.toString() != "NaN" &&
-        it.rate.toString() != "0.0"
+        it.rate != "NaN" &&
+        it.rate != "0.0" &&
+        it.rate != "0"
 } ?: mutableListOf()
+
+fun Int.indexToNumber() = this + 1
+
+fun Int.numberToIndex() = this - 1
 
 @Suppress("ComplexMethod", "LongMethod")
 fun Rates.getConversionByName(name: String) = when (name.uppercase()) {

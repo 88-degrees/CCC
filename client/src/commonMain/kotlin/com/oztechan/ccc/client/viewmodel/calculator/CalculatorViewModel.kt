@@ -7,13 +7,18 @@ import co.touchlab.kermit.Logger
 import com.github.submob.scopemob.mapTo
 import com.github.submob.scopemob.whether
 import com.github.submob.scopemob.whetherNot
+import com.oztechan.ccc.analytics.AnalyticsManager
+import com.oztechan.ccc.analytics.model.Event
+import com.oztechan.ccc.analytics.model.Param
+import com.oztechan.ccc.analytics.model.UserProperty
 import com.oztechan.ccc.client.base.BaseSEEDViewModel
-import com.oztechan.ccc.client.helper.SessionManager
 import com.oztechan.ccc.client.mapper.toRates
 import com.oztechan.ccc.client.mapper.toTodayResponse
 import com.oztechan.ccc.client.mapper.toUIModelList
 import com.oztechan.ccc.client.model.Currency
 import com.oztechan.ccc.client.model.RateState
+import com.oztechan.ccc.client.repository.ad.AdRepository
+import com.oztechan.ccc.client.util.MAXIMUM_FLOATING_POINT
 import com.oztechan.ccc.client.util.calculateResult
 import com.oztechan.ccc.client.util.getCurrencyConversionByRate
 import com.oztechan.ccc.client.util.getFormatted
@@ -25,14 +30,13 @@ import com.oztechan.ccc.client.viewmodel.calculator.CalculatorData.Companion.KEY
 import com.oztechan.ccc.client.viewmodel.calculator.CalculatorData.Companion.KEY_DEL
 import com.oztechan.ccc.client.viewmodel.calculator.CalculatorData.Companion.MAXIMUM_INPUT
 import com.oztechan.ccc.client.viewmodel.calculator.CalculatorData.Companion.MAXIMUM_OUTPUT
-import com.oztechan.ccc.client.viewmodel.calculator.CalculatorData.Companion.PRECISION
 import com.oztechan.ccc.client.viewmodel.currencies.CurrenciesData.Companion.MINIMUM_ACTIVE_CURRENCY
-import com.oztechan.ccc.common.api.repo.ApiRepository
-import com.oztechan.ccc.common.db.currency.CurrencyRepository
-import com.oztechan.ccc.common.db.offlinerates.OfflineRatesRepository
+import com.oztechan.ccc.common.datasource.currency.CurrencyDataSource
+import com.oztechan.ccc.common.datasource.offlinerates.OfflineRatesDataSource
+import com.oztechan.ccc.common.datasource.settings.SettingsDataSource
 import com.oztechan.ccc.common.model.CurrencyResponse
 import com.oztechan.ccc.common.model.Rates
-import com.oztechan.ccc.common.settings.SettingsRepository
+import com.oztechan.ccc.common.service.backend.BackendApiService
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -45,11 +49,12 @@ import kotlinx.coroutines.launch
 
 @Suppress("TooManyFunctions")
 class CalculatorViewModel(
-    private val settingsRepository: SettingsRepository,
-    private val apiRepository: ApiRepository,
-    private val currencyRepository: CurrencyRepository,
-    private val offlineRatesRepository: OfflineRatesRepository,
-    private val sessionManager: SessionManager
+    private val settingsDataSource: SettingsDataSource,
+    private val backendApiService: BackendApiService,
+    private val currencyDataSource: CurrencyDataSource,
+    private val offlineRatesDataSource: OfflineRatesDataSource,
+    private val adRepository: AdRepository,
+    private val analyticsManager: AnalyticsManager
 ) : BaseSEEDViewModel(), CalculatorEvent {
     // region SEED
     private val _state = MutableStateFlow(CalculatorState())
@@ -64,15 +69,15 @@ class CalculatorViewModel(
     // endregion
 
     init {
-        _state.update(base = settingsRepository.currentBase, input = "")
+        _state.update(base = settingsDataSource.currentBase, input = "")
 
         state.map { it.base }
             .distinctUntilChanged()
             .onEach {
                 Logger.d { "CalculatorViewModel base changed $it" }
-                currentBaseChanged(it)
+                currentBaseChanged(it, true)
             }
-            .launchIn(clientScope)
+            .launchIn(viewModelScope)
 
         state.map { it.input }
             .distinctUntilChanged()
@@ -80,21 +85,25 @@ class CalculatorViewModel(
                 Logger.d { "CalculatorViewModel input changed $it" }
                 calculateOutput(it)
             }
-            .launchIn(clientScope)
+            .launchIn(viewModelScope)
 
-        currencyRepository.collectActiveCurrencies()
+        currencyDataSource.collectActiveCurrencies()
             .onEach {
                 Logger.d { "CalculatorViewModel currencyList changed\n${it.joinToString("\n")}" }
                 _state.update(currencyList = it.toUIModelList())
+
+                analyticsManager.setUserProperty(UserProperty.CurrencyCount(it.count().toString()))
+                analyticsManager.setUserProperty(
+                    UserProperty.ActiveCurrencies(it.joinToString(",") { currency -> currency.name })
+                )
             }
-            .launchIn(clientScope)
+            .launchIn(viewModelScope)
     }
 
-    private fun getRates() = data.rates?.let { rates ->
-        calculateConversions(rates)
-        _state.update(rateState = RateState.Cached(rates.date))
-    } ?: clientScope.launch {
-        runCatching { apiRepository.getRatesByBackend(settingsRepository.currentBase) }
+    private fun getRates() = data.rates?.let {
+        calculateConversions(it, RateState.Cached(it.date))
+    } ?: viewModelScope.launch {
+        runCatching { backendApiService.getRates(settingsDataSource.currentBase) }
             .onFailure(::getRatesFailed)
             .onSuccess(::getRatesSuccess)
     }
@@ -102,25 +111,26 @@ class CalculatorViewModel(
     private fun getRatesSuccess(currencyResponse: CurrencyResponse) = currencyResponse
         .toRates().let {
             data.rates = it
-            calculateConversions(it)
-            _state.update(rateState = RateState.Online(it.date))
+            calculateConversions(it, RateState.Online(it.date))
         }.also {
-            offlineRatesRepository.insertOfflineRates(currencyResponse.toTodayResponse())
+            viewModelScope.launch {
+                offlineRatesDataSource.insertOfflineRates(currencyResponse.toTodayResponse())
+            }
         }
 
-    private fun getRatesFailed(t: Throwable) {
+    private fun getRatesFailed(t: Throwable) = viewModelScope.launchIgnored {
         Logger.w(t) { "CalculatorViewModel getRatesFailed" }
-        offlineRatesRepository.getOfflineRatesByBase(
-            settingsRepository.currentBase
-        )?.let { offlineRates ->
-            calculateConversions(offlineRates)
-            _state.update(rateState = RateState.Offline(offlineRates.date))
-        } ?: clientScope.launch {
+        offlineRatesDataSource.getOfflineRatesByBase(
+            settingsDataSource.currentBase
+        )?.let {
+            calculateConversions(it, RateState.Offline(it.date))
+        } ?: run {
             Logger.w(Exception("No offline rates")) { this@CalculatorViewModel::class.simpleName.toString() }
 
             state.value.currencyList.size
                 .whether { it > 1 }
                 ?.let { _effect.emit(CalculatorEffect.Error) }
+                ?: run { _effect.emit(CalculatorEffect.FewCurrency) }
 
             _state.update(
                 rateState = RateState.Error,
@@ -129,11 +139,10 @@ class CalculatorViewModel(
         }
     }
 
-    private fun calculateOutput(input: String) = clientScope.launch {
-        _state.update(loading = true)
+    private fun calculateOutput(input: String) = viewModelScope.launch {
         data.parser
-            .calculate(input.toSupportedCharacters(), PRECISION)
-            .mapTo { if (isFinite()) getFormatted() else "" }
+            .calculate(input.toSupportedCharacters(), MAXIMUM_FLOATING_POINT)
+            .mapTo { if (isFinite()) getFormatted(settingsDataSource.precision) else "" }
             .whether(
                 { output -> output.length <= MAXIMUM_OUTPUT },
                 { input.length <= MAXIMUM_INPUT }
@@ -153,68 +162,66 @@ class CalculatorViewModel(
         }
     }
 
-    private fun calculateConversions(rates: Rates?) = _state.update(
+    private fun calculateConversions(rates: Rates, rateState: RateState) = _state.update(
         currencyList = _state.value.currencyList.onEach {
             it.rate = rates.calculateResult(it.name, _state.value.output)
+                .getFormatted(settingsDataSource.precision)
+                .toStandardDigits()
         },
+        rateState = rateState,
         loading = false
     )
 
-    private fun currentBaseChanged(newBase: String) {
+    private fun currentBaseChanged(newBase: String, shouldTrack: Boolean = false) = viewModelScope.launchIgnored {
         data.rates = null
-        settingsRepository.currentBase = newBase
+        settingsDataSource.currentBase = newBase
         _state.update(
+            loading = true,
             base = newBase,
             input = _state.value.input,
-            symbol = currencyRepository.getCurrencyByName(newBase)?.symbol ?: ""
+            symbol = currencyDataSource.getCurrencyByName(newBase)?.symbol.orEmpty()
         )
+
+        if (shouldTrack) {
+            analyticsManager.trackEvent(Event.BaseChange(Param.Base(newBase)))
+            analyticsManager.setUserProperty(UserProperty.BaseCurrency(newBase))
+        }
     }
 
-    fun shouldShowBannerAd() = sessionManager.shouldShowBannerAd()
+    fun shouldShowBannerAd() = adRepository.shouldShowBannerAd()
 
     // region Event
     override fun onKeyPress(key: String) {
         Logger.d { "CalculatorViewModel onKeyPress $key" }
         when (key) {
             KEY_AC -> _state.update(input = "")
-            KEY_DEL ->
-                state.value.input
-                    .whetherNot { isEmpty() }
-                    ?.apply {
-                        _state.update(input = substring(0, length - 1))
-                    }
-            else -> _state.update(input = if (key.isEmpty()) "" else state.value.input + key)
+            KEY_DEL -> state.value.input
+                .whetherNot { isEmpty() }
+                ?.apply {
+                    _state.update(input = substring(0, length - 1))
+                }
+            else -> _state.update(input = state.value.input + key)
         }
     }
 
-    override fun onItemClick(currency: Currency) {
+    override fun onItemClick(currency: Currency) = with(currency) {
         Logger.d { "CalculatorViewModel onItemClick ${currency.name}" }
-        var finalResult = currency.rate
-            .getFormatted()
-            .toStandardDigits()
-            .toSupportedCharacters()
-
-        while (finalResult.length >= MAXIMUM_OUTPUT || finalResult.length >= MAXIMUM_INPUT) {
-            finalResult = finalResult.dropLast(1)
-        }
-
-        if (finalResult.last() == CHAR_DOT) {
-            finalResult = finalResult.dropLast(1)
-        }
-
         _state.update(
-            base = currency.name,
-            input = finalResult
+            base = name,
+            input = if (rate.last() == CHAR_DOT) rate.dropLast(1) else rate
         )
     }
 
     override fun onItemImageLongClick(currency: Currency) {
         Logger.d { "CalculatorViewModel onItemImageLongClick ${currency.name}" }
-        clientScope.launch {
+
+        analyticsManager.trackEvent(Event.ShowConversion(Param.Base(currency.name)))
+
+        viewModelScope.launch {
             _effect.emit(
                 CalculatorEffect.ShowRate(
                     currency.getCurrencyConversionByRate(
-                        settingsRepository.currentBase,
+                        settingsDataSource.currentBase,
                         data.rates
                     ),
                     currency.name
@@ -225,17 +232,20 @@ class CalculatorViewModel(
 
     override fun onItemAmountLongClick(amount: String) {
         Logger.d { "CalculatorViewModel onItemAmountLongClick $amount" }
-        clientScope.launch {
+
+        analyticsManager.trackEvent(Event.CopyClipboard)
+
+        viewModelScope.launch {
             _effect.emit(CalculatorEffect.CopyToClipboard(amount))
         }
     }
 
-    override fun onBarClick() = clientScope.launchIgnored {
+    override fun onBarClick() = viewModelScope.launchIgnored {
         Logger.d { "CalculatorViewModel onBarClick" }
         _effect.emit(CalculatorEffect.OpenBar)
     }
 
-    override fun onSettingsClicked() = clientScope.launchIgnored {
+    override fun onSettingsClicked() = viewModelScope.launchIgnored {
         Logger.d { "CalculatorViewModel onSettingsClicked" }
         _effect.emit(CalculatorEffect.OpenSettings)
     }

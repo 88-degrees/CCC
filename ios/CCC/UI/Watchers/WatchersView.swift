@@ -1,0 +1,195 @@
+//
+//  WatchersView.swift
+//  CCC
+//
+//  Created by Mustafa Ozhan on 26.04.22.
+//  Copyright © 2022 orgName. All rights reserved.
+//
+
+import SwiftUI
+import Client
+import Res
+import NavigationStack
+
+typealias WatchersObservable = ObservableSEED
+<WatchersViewModel, WatchersState, WatchersEffect, WatchersEvent, WatchersData>
+
+struct WatchersView: View {
+    @EnvironmentObject private var navigationStack: NavigationStack
+    @StateObject var observable = WatchersObservable(viewModel: koin.get())
+    @StateObject var notificationManager = NotificationManager()
+    @State var baseBarInfo = BarInfo(isShown: false, watcher: nil)
+    @State var targetBarInfo = BarInfo(isShown: false, watcher: nil)
+
+    private let analyticsManager: AnalyticsManager = koin.get()
+
+    var watcher: Client.Watcher?
+
+    var body: some View {
+        ZStack {
+            MR.colors().background_strong.get().edgesIgnoringSafeArea(.all)
+
+            VStack {
+                WatchersToolbarView(backEvent: observable.event.onBackClick)
+
+                if notificationManager.authorizationStatus == .authorized {
+
+                    Form {
+                        List(observable.state.watcherList, id: \.id) { watcher in
+                            WatcherItem(
+                                isBaseBarShown: $baseBarInfo.isShown,
+                                isTargetBarShown: $targetBarInfo.isShown,
+                                watcher: watcher,
+                                event: observable.event
+                            )
+                        }
+                        .listRowInsets(.init())
+                        .listRowBackground(MR.colors().background.get())
+                        .background(MR.colors().background.get())
+                    }
+                    .background(MR.colors().background.get())
+
+                    Spacer()
+
+                    VStack {
+                        HStack {
+                            Spacer()
+
+                            Button {
+                                observable.event.onAddClick()
+                            } label: {
+                                Label(MR.strings().txt_add.get(), systemImage: "plus")
+                            }
+                            .foregroundColor(MR.colors().text.get())
+                            .padding(.vertical, 15)
+                            .background(MR.colors().background_strong.get())
+
+                            Spacer()
+
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .background(MR.colors().background_strong.get())
+
+                } else {
+                    VStack {
+                        Text(MR.strings().txt_enable_notification_permission.get())
+                            .multilineTextAlignment(.center)
+                        Button {
+                            if let url = URL(
+                                string: UIApplication.openSettingsURLString
+                            ), UIApplication.shared.canOpenURL(url) {
+                                UIApplication.shared.open(url)
+                            }
+                        } label: {
+                            Label(MR.strings().txt_settings.get(), systemImage: "gear")
+                        }
+                        .padding()
+                        .background(MR.colors().background_weak.get())
+                        .foregroundColor(MR.colors().text.get())
+                        .cornerRadius(5)
+
+                    }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .background(MR.colors().background.get())
+                }
+
+                if observable.viewModel.shouldShowBannerAd() {
+                    BannerAdView(
+                        unitID: "BANNER_AD_UNIT_ID_WATCHERS".getSecretValue()
+                    )
+                    .frame(maxHeight: 50)
+                    .padding(.bottom, 55)
+                } else {
+                    Text("").padding(5)
+                }
+            }
+            .background(MR.colors().background_strong.get())
+            .edgesIgnoringSafeArea(.bottom)
+        }
+        .sheet(
+            isPresented: $baseBarInfo.isShown,
+            content: {
+                SelectCurrencyView(
+                    isBarShown: $baseBarInfo.isShown,
+                    onCurrencySelected: {
+                        observable.event.onBaseChanged(
+                            watcher: baseBarInfo.watcher,
+                            newBase: $0
+                        )
+                    }
+                ).environmentObject(navigationStack)
+            }
+        )
+        .sheet(
+            isPresented: $targetBarInfo.isShown,
+            content: {
+                SelectCurrencyView(
+                    isBarShown: $targetBarInfo.isShown,
+                    onCurrencySelected: {
+                        observable.event.onTargetChanged(
+                            watcher: targetBarInfo.watcher,
+                            newTarget: $0
+                        )
+                    }
+                ).environmentObject(navigationStack)
+            }
+        )
+        .onAppear {
+            observable.startObserving()
+            notificationManager.reloadAuthorisationStatus()
+            analyticsManager.trackScreen(screenName: ScreenName.Watchers())
+        }
+        .onDisappear { observable.stopObserving() }
+        .onReceive(observable.effect) { onEffect(effect: $0) }
+        .onReceive(NotificationCenter.default.publisher(
+            for: UIApplication.willEnterForegroundNotification
+        )) { _ in
+            notificationManager.reloadAuthorisationStatus()
+        }
+        .onChange(of: notificationManager.authorizationStatus) {
+            onAuthorisationChange(authorizationStatus: $0)
+        }
+        .animation(.default)
+    }
+
+    private func onEffect(effect: WatchersEffect) {
+        logger.i(message: {"WatchersView onEffect \(effect.description)"})
+        switch effect {
+        case is WatchersEffect.Back:
+            navigationStack.pop()
+        // swiftlint:disable force_cast
+        case is WatchersEffect.SelectBase:
+            baseBarInfo.watcher = (effect as! WatchersEffect.SelectBase).watcher
+            baseBarInfo.isShown.toggle()
+        // swiftlint:disable force_cast
+        case is WatchersEffect.SelectTarget:
+            targetBarInfo.watcher = (effect as! WatchersEffect.SelectTarget).watcher
+            targetBarInfo.isShown.toggle()
+        case is WatchersEffect.MaximumInput:
+            showSnack(text: MR.strings().text_max_input.get(), isTop: true)
+        case is WatchersEffect.InvalidInput:
+            showSnack(text: MR.strings().text_invalid_input.get(), isTop: true)
+        case is WatchersEffect.MaximumNumberOfWatchers:
+            showSnack(text: MR.strings().text_maximum_number_of_watchers.get(), isTop: true)
+        default:
+            logger.i(message: {"WatchersView unknown effect"})
+        }
+    }
+
+    private func onAuthorisationChange(authorizationStatus: UNAuthorizationStatus?) {
+        logger.i(message: {"WatchersView onAuthorisationChange \(String(describing: authorizationStatus?.rawValue))"})
+        switch authorizationStatus {
+        case .notDetermined:
+            notificationManager.requestAuthorisation()
+        case .authorized:
+            notificationManager.reloadAuthorisationStatus()
+        default:
+            break
+        }
+    }
+
+    struct BarInfo {
+        var isShown: Bool
+        var watcher: Client.Watcher?
+    }
+}

@@ -4,12 +4,16 @@
 package com.oztechan.ccc.client.viewmodel.main
 
 import co.touchlab.kermit.Logger
+import com.oztechan.ccc.analytics.AnalyticsManager
+import com.oztechan.ccc.analytics.model.UserProperty
 import com.oztechan.ccc.client.base.BaseSEEDViewModel
 import com.oztechan.ccc.client.base.BaseState
-import com.oztechan.ccc.client.helper.SessionManager
+import com.oztechan.ccc.client.model.AppTheme
+import com.oztechan.ccc.client.repository.ad.AdRepository
+import com.oztechan.ccc.client.repository.appconfig.AppConfigRepository
 import com.oztechan.ccc.client.util.isRewardExpired
-import com.oztechan.ccc.common.settings.SettingsRepository
-import com.oztechan.ccc.config.ConfigManager
+import com.oztechan.ccc.common.datasource.settings.SettingsDataSource
+import com.oztechan.ccc.config.ConfigService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +22,11 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val settingsRepository: SettingsRepository,
-    private val configManager: ConfigManager,
-    private val sessionManager: SessionManager
+    private val settingsDataSource: SettingsDataSource,
+    private val configService: ConfigService,
+    private val appConfigRepository: AppConfigRepository,
+    private val adRepository: AdRepository,
+    analyticsManager: AnalyticsManager,
 ) : BaseSEEDViewModel(), MainEvent {
     // region SEED
     override val state: StateFlow<BaseState>? = null
@@ -33,53 +39,67 @@ class MainViewModel(
     override val data = MainData()
     // endregion
 
+    init {
+        with(analyticsManager) {
+            setUserProperty(UserProperty.IsAdFree(isAdFree().toString()))
+            setUserProperty(UserProperty.SessionCount(settingsDataSource.sessionCount.toString()))
+            setUserProperty(
+                UserProperty.AppTheme(
+                    AppTheme.getAnalyticsThemeName(
+                        settingsDataSource.appTheme,
+                        appConfigRepository.getDeviceType()
+                    )
+                )
+            )
+            setUserProperty(UserProperty.DevicePlatform(appConfigRepository.getDeviceType().name))
+        }
+    }
+
     private fun setupInterstitialAdTimer() {
         data.adVisibility = true
 
-        data.adJob = clientScope.launch {
-            delay(configManager.appConfig.adConfig.interstitialAdInitialDelay)
+        data.adJob = viewModelScope.launch {
+            delay(configService.appConfig.adConfig.interstitialAdInitialDelay)
 
-            while (isActive && sessionManager.shouldShowInterstitialAd()) {
+            while (isActive && adRepository.shouldShowInterstitialAd()) {
                 if (data.adVisibility && !isAdFree()) {
                     _effect.emit(MainEffect.ShowInterstitialAd)
                 }
-                delay(configManager.appConfig.adConfig.interstitialAdPeriod)
+                delay(configService.appConfig.adConfig.interstitialAdPeriod)
             }
         }
     }
 
     private fun adjustSessionCount() {
         if (data.isNewSession) {
-            settingsRepository.sessionCount++
+            settingsDataSource.sessionCount++
             data.isNewSession = false
         }
     }
 
     private fun checkAppUpdate() {
-        sessionManager.checkAppUpdate(data.isAppUpdateShown)?.let { isCancelable ->
-            clientScope.launch {
-                _effect.emit(MainEffect.AppUpdateEffect(isCancelable))
+        appConfigRepository.checkAppUpdate(data.isAppUpdateShown)?.let { isCancelable ->
+            viewModelScope.launch {
+                _effect.emit(MainEffect.AppUpdateEffect(isCancelable, appConfigRepository.getMarketLink()))
                 data.isAppUpdateShown = true
             }
         }
     }
 
     private fun checkReview() {
-        if (sessionManager.shouldShowAppReview()) {
-            clientScope.launch {
-                delay(configManager.appConfig.appReview.appReviewDialogDelay)
+        if (appConfigRepository.shouldShowAppReview()) {
+            viewModelScope.launch {
+                delay(configService.appConfig.appReview.appReviewDialogDelay)
                 _effect.emit(MainEffect.RequestReview)
             }
         }
     }
 
-    fun isFistRun() = settingsRepository.firstRun
+    fun isFistRun() = settingsDataSource.firstRun
 
-    fun getAppTheme() = settingsRepository.appTheme
+    fun getAppTheme() = settingsDataSource.appTheme
 
-    fun isAdFree() = !settingsRepository.adFreeEndDate.isRewardExpired()
-
-    fun getSessionCount() = settingsRepository.sessionCount
+    fun isAdFree() = !settingsDataSource.adFreeEndDate.isRewardExpired()
 
     // region Event
     override fun onPause() {

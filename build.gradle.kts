@@ -23,6 +23,7 @@ buildscript {
             classpath(ANDROID_GRADLE_PLUGIN)
             classpath(KOTLIN_GRADLE_PLUGIN)
             classpath(GSM)
+            classpath(FIREBASE_PER_PLUGIN)
             classpath(CRASHLYTICS)
             classpath(NAVIGATION)
             classpath(KOTLIN_SERIALIZATION)
@@ -38,6 +39,7 @@ group = ProjectSettings.PROJECT_ID
 version = ProjectSettings.getVersionName(project)
 
 allprojects {
+    apply(plugin = "kover")
     repositories {
         mavenCentral()
         google()
@@ -56,4 +58,8 @@ allprojects {
 tasks.withType<DependencyUpdatesTask> {
     gradleReleaseChannel = "current"
     rejectVersionIf { candidate.version.isNonStable() }
+}
+
+koverMerged {
+    enable()
 }

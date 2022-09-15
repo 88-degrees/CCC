@@ -9,62 +9,18 @@
 import SwiftUI
 import Client
 
-func startKoin() {
+var koin: Koin_coreKoin = {
     let userDefaults = UserDefaults(suiteName: "application_user_defaults")!
 
-    _koin = KoinIOSKt.doInitIOS(
-        userDefaults: userDefaults
+    return IOSKoinKt.doInitIOS(
+        userDefaults: userDefaults,
+        analyticsManager: AnalyticsManagerImpl()
     ).koin
-}
+}()
 
-private var _koin: Koin_coreKoin?
-
-var koin: Koin_coreKoin {
-    return _koin!
-}
-
-// swiftlint:disable force_cast
 extension Koin_coreKoin {
-
-    // viewmodel
-    func get() -> MainViewModel {
-        return koin.getDependency(objCClass: MainViewModel.self) as! MainViewModel
-    }
-
-    func get() -> CalculatorViewModel {
-        return koin.getDependency(objCClass: CalculatorViewModel.self) as! CalculatorViewModel
-    }
-
-    func get() -> CurrenciesViewModel {
-        return koin.getDependency(objCClass: CurrenciesViewModel.self) as! CurrenciesViewModel
-    }
-
-    func get() -> ChangeBaseViewModel {
-        return koin.getDependency(objCClass: ChangeBaseViewModel.self) as! ChangeBaseViewModel
-    }
-
-    func get() -> SettingsViewModel {
-        return koin.getDependency(objCClass: SettingsViewModel.self) as! SettingsViewModel
-    }
-
-    // Observable
-    func get() -> MainObservable {
-        return MainObservable(viewModel: get())
-    }
-
-    func get() -> CalculatorObservable {
-        return CalculatorObservable(viewModel: get())
-    }
-
-    func get() -> ChangeBaseObservable {
-        return ChangeBaseObservable(viewModel: get())
-    }
-
-    func get() -> SettingsObservable {
-        return SettingsObservable(viewModel: get())
-    }
-
-    func get() -> CurrenciesObservable {
-        return CurrenciesObservable(viewModel: get())
+    // swiftlint:disable force_cast
+    func get<T>() -> T {
+        return koin.getDependency(objCObject: T.self) as! T
     }
 }

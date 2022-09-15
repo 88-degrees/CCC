@@ -6,7 +6,6 @@ package com.oztechan.ccc.android.ui.main
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.flowWithLifecycle
@@ -14,13 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import co.touchlab.kermit.Logger
 import com.github.submob.basemob.activity.BaseActivity
 import com.oztechan.ccc.ad.AdManager
-import com.oztechan.ccc.analytics.AnalyticsManager
-import com.oztechan.ccc.analytics.model.UserProperty
 import com.oztechan.ccc.android.util.requestAppReview
 import com.oztechan.ccc.android.util.showDialog
 import com.oztechan.ccc.android.util.updateAppTheme
 import com.oztechan.ccc.android.util.updateBaseContextLocale
-import com.oztechan.ccc.client.model.AppTheme
 import com.oztechan.ccc.client.viewmodel.main.MainEffect
 import com.oztechan.ccc.client.viewmodel.main.MainViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -31,14 +27,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity() {
 
-    private val analyticsManager: AnalyticsManager by inject()
     private val adManager: AdManager by inject()
     private val mainViewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         Logger.i { "MainActivity onCreate" }
-        installSplashScreen()
         updateAppTheme(mainViewModel.getAppTheme())
         setContentView(R.layout.activity_main)
         checkDestination()
@@ -55,48 +50,29 @@ class MainActivity : BaseActivity() {
                     getString(R.string.android_interstitial_ad_id)
                 )
                 MainEffect.RequestReview -> requestAppReview(this)
-                is MainEffect.AppUpdateEffect -> showAppUpdateDialog(viewEffect.isCancelable)
+                is MainEffect.AppUpdateEffect -> showAppUpdateDialog(viewEffect.isCancelable, viewEffect.marketLink)
             }
         }.launchIn(lifecycleScope)
 
-    private fun showAppUpdateDialog(isCancelable: Boolean) = showDialog(
-        activity = this,
+    private fun showAppUpdateDialog(isCancelable: Boolean, marketLink: String) = showDialog(
         title = R.string.txt_update_dialog_title,
         message = R.string.txt_update_dialog_description,
         positiveButton = R.string.update,
         cancelable = isCancelable
     ) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.app_market_link))))
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(marketLink)))
     }
 
     private fun checkDestination() = with(getNavigationController()) {
         graph = navInflater.inflate(R.navigation.main_graph).apply {
-            startDestination = if (mainViewModel.isFistRun()) {
-                R.id.sliderFragment
-            } else {
-                R.id.calculatorFragment
-            }
+            setStartDestination(
+                if (mainViewModel.isFistRun()) {
+                    R.id.sliderFragment
+                } else {
+                    R.id.calculatorFragment
+                }
+            )
         }
-    }
-
-    private fun setUserProperties() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            analyticsManager.setUserProperty(UserProperty.APP_THEME, AppTheme.SYSTEM_DARK)
-        } else {
-            AppTheme.getThemeByValue(mainViewModel.getAppTheme())
-                ?.typeName
-                ?.let { analyticsManager.setUserProperty(UserProperty.APP_THEME, it) }
-        }
-
-        analyticsManager.setUserProperty(
-            UserProperty.IS_AD_FREE,
-            mainViewModel.isAdFree().toString()
-        )
-
-        analyticsManager.setUserProperty(
-            UserProperty.SESSION_COUNT,
-            mainViewModel.getSessionCount().toString()
-        )
     }
 
     override fun onResume() {
@@ -107,7 +83,6 @@ class MainActivity : BaseActivity() {
 
     override fun onPause() {
         Logger.i { "MainActivity onPause" }
-        setUserProperties()
         mainViewModel.event.onPause()
         super.onPause()
     }

@@ -13,7 +13,7 @@ import com.github.submob.logmob.initCrashlytics
 import com.github.submob.logmob.initLogger
 import com.oztechan.ccc.ad.initAds
 import com.oztechan.ccc.analytics.initAnalytics
-import com.oztechan.ccc.android.di.platformModule
+import com.oztechan.ccc.android.di.module.appModule
 import com.oztechan.ccc.client.di.initAndroid
 import mustafaozhan.github.com.mycurrencies.BuildConfig
 
@@ -23,24 +23,23 @@ class Application : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (BuildConfig.DEBUG) {
-            enableStrictMode()
+        if (!BuildConfig.DEBUG) {
+            initCrashlytics()
+            initAnalytics(this)
         }
 
         initLogger()
-
         Logger.i { "Application onCreate" }
 
-        if (!BuildConfig.DEBUG) {
-            initAnalytics(this)
-            initCrashlytics()
+        if (BuildConfig.DEBUG) {
+            enableStrictMode()
         }
 
         initAds(this)
 
         initAndroid(
             context = this,
-            platformModule = platformModule
+            appModule = appModule
         )
 
         Thread.setDefaultUncaughtExceptionHandler(ANRWatchDogHandler())

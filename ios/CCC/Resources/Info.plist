@@ -2,27 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<<<<<<< HEAD
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>private-url.com</key>
-			<dict/>
-			<key>NSExceptionAllowssecureHTTPLoads</key>
-			<false/>
-		</dict>
-	</dict>
-=======
->>>>>>> 270ec0c4966c28417845cc16357a89d69dcbb211
-	<key>BANNER_AD_UNIT_ID_CALCULATOR</key>
-	<string>$(BANNER_AD_UNIT_ID_CALCULATOR)</string>
-	<key>BANNER_AD_UNIT_ID_CURRENCIES</key>
-	<string>$(BANNER_AD_UNIT_ID_CURRENCIES)</string>
-	<key>BANNER_AD_UNIT_ID_SETTINGS</key>
-	<string>$(BANNER_AD_UNIT_ID_SETTINGS)</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.oztechan.ccc.CCC.fetch</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -39,12 +22,22 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>GADApplicationIdentifier</key>
-	<string>$(ADMOB_APP_ID)</string>
-	<key>INTERSTITIAL_AD_ID</key>
-	<string>$(INTERSTITIAL_AD_ID)</string>
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>GADApplicationIdentifier</key>
+	<string>$(ADMOB_APP_ID)</string>
+	<key>BANNER_AD_UNIT_ID_CALCULATOR</key>
+	<string>$(BANNER_AD_UNIT_ID_CALCULATOR)</string>
+	<key>BANNER_AD_UNIT_ID_CURRENCIES</key>
+	<string>$(BANNER_AD_UNIT_ID_CURRENCIES)</string>
+	<key>BANNER_AD_UNIT_ID_SETTINGS</key>
+	<string>$(BANNER_AD_UNIT_ID_SETTINGS)</string>
+	<key>BANNER_AD_UNIT_ID_WATCHERS</key>
+	<string>$(BANNER_AD_UNIT_ID_WATCHERS)</string>
+	<key>INTERSTITIAL_AD_ID</key>
+	<string>$(INTERSTITIAL_AD_ID)</string>
 	<key>REWARDED_AD_UNIT_ID</key>
 	<string>$(REWARDED_AD_UNIT_ID)</string>
 	<key>SKAdNetworkItems</key>
@@ -203,15 +196,12 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 	</dict>
-	<key>UILaunchScreen</key>
-	<dict>
-		<key>UIColorName</key>
-		<string>launchBackground</string>
-		<key>UIImageName</key>
-		<string>launchImage</string>
-		<key>UIImageRespectsSafeAreaInsets</key>
-		<true/>
-	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch Screen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
