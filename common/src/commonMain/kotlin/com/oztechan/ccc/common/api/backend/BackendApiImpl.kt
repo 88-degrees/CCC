@@ -13,7 +13,8 @@ class BackendApiImpl(private val client: HttpClient) : BackendApi {
 
     override suspend fun getRates(base: String): CurrencyResponse = client.get {
         url {
-            takeFrom(BuildKonfig.BASE_URL_BACKEND)
+//            takeFrom(BuildKonfig.BASE_URL_BACKEND)
+            takeFrom("https://gist.githubusercontent.com/mustafaozhan/fa6d05e65919085f871adc825accea46/raw/d3bf3a7771e872e0c39541fe23b4058f4ae24c41/response.json")
             path(PATH_CURRENCY, PATH_BY_BASE)
             parameter(QUERY_BASE, base)
         }

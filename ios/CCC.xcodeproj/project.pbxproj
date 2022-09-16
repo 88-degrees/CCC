@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		15A796074B10DEA83142F40F /* Pods_CCC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 341CA58575E08166F616E331 /* Pods_CCC.framework */; };
-		29AC46AB27DA488300635FAA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 29AC46AA27DA488300635FAA /* GoogleService-Info.plist */; };
 		5C039FD625C1B705008350A3 /* FormProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C039FD525C1B705008350A3 /* FormProgressView.swift */; };
 		5C17581A25BC74BD00D16BD9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C17581925BC74BD00D16BD9 /* SettingsView.swift */; };
 		5C314CBE25BA0AC0007B22D8 /* CurrenciesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C314CBD25BA0AC0007B22D8 /* CurrenciesView.swift */; };
@@ -74,7 +73,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		29AC46AA27DA488300635FAA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		341CA58575E08166F616E331 /* Pods_CCC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CCC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C039FD525C1B705008350A3 /* FormProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormProgressView.swift; sourceTree = "<group>"; };
 		5C17581925BC74BD00D16BD9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -305,7 +303,6 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
-				29AC46AA27DA488300635FAA /* GoogleService-Info.plist */,
 				7555FF7D242A565900829871 /* CCC */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
@@ -419,7 +416,7 @@
 			packageReferences = (
 				5C5C0BA22874B8450061AEF9 /* XCRemoteSwiftPackageReference "swiftui-navigation-stack" */,
 				5C3EB6D328775993001E822A /* XCRemoteSwiftPackageReference "SwiftMessages" */,
-				5C3EB6D628775AFF001E822A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				5C3EB6D628775AFF001E822A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads.git" */,
 				5CF0622C28AD93CE00C579F6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
@@ -437,7 +434,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7555FF88242A565B00829871 /* Preview Assets.xcassets in Resources */,
-				29AC46AB27DA488300635FAA /* GoogleService-Info.plist in Resources */,
 				7555FF85242A565B00829871 /* Assets.xcassets in Resources */,
 				5C31E43F28145D32008C42B9 /* Launch Screen.storyboard in Resources */,
 				5CD8EB7328A6AA6100E9C434 /* GoogleService-Info.plist in Resources */,
@@ -695,7 +691,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = TenetAi.in;
+				PRODUCT_BUNDLE_IDENTIFIER = com.oztechan.ccc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -720,7 +716,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = TenetAi.in;
+				PRODUCT_BUNDLE_IDENTIFIER = com.oztechan.ccc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -759,7 +755,7 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		5C3EB6D628775AFF001E822A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+		5C3EB6D628775AFF001E822A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
 			requirement = {
@@ -793,7 +789,7 @@
 		};
 		5C3EB6D728775AFF001E822A /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5C3EB6D628775AFF001E822A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			package = 5C3EB6D628775AFF001E822A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads.git" */;
 			productName = GoogleMobileAds;
 		};
 		5C5C0BA32874B8450061AEF9 /* NavigationStack */ = {
