@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,12 +18,12 @@ import com.oztechan.ccc.ad.AdManager
 import com.oztechan.ccc.analytics.AnalyticsManager
 import com.oztechan.ccc.analytics.model.ScreenName
 import com.oztechan.ccc.android.util.destroyBanner
+import com.oztechan.ccc.android.util.getThemeMode
 import com.oztechan.ccc.android.util.gone
 import com.oztechan.ccc.android.util.setBannerAd
 import com.oztechan.ccc.android.util.showDialog
 import com.oztechan.ccc.android.util.showSingleChoiceDialog
 import com.oztechan.ccc.android.util.showSnack
-import com.oztechan.ccc.android.util.updateAppTheme
 import com.oztechan.ccc.android.util.visibleIf
 import com.oztechan.ccc.client.model.AppTheme
 import com.oztechan.ccc.client.util.MAXIMUM_FLOATING_POINT
@@ -60,6 +61,7 @@ class SettingsFragment : BaseVBFragment<FragmentSettingsBinding>() {
         super.onDestroyView()
     }
 
+    @Suppress("LongMethod")
     private fun initViews() = with(binding) {
         adViewContainer.setBannerAd(
             adManager = adManager,
@@ -120,6 +122,11 @@ class SettingsFragment : BaseVBFragment<FragmentSettingsBinding>() {
             settingsItemTitle.text = getString(R.string.settings_item_on_github_title)
             settingsItemSubTitle.text = getString(R.string.settings_item_on_github_sub_title)
         }
+        with(itemVersion) {
+            imgSettingsItem.setBackgroundResource(R.drawable.ic_version)
+            settingsItemTitle.text = getString(R.string.settings_item_version_title)
+            settingsItemSubTitle.text = getString(R.string.settings_item_version_sub_title)
+        }
     }
 
     private fun observeStates() = settingsViewModel.state
@@ -132,6 +139,7 @@ class SettingsFragment : BaseVBFragment<FragmentSettingsBinding>() {
                     activeCurrencyCount
                 )
                 binding.itemTheme.settingsItemValue.text = appThemeType.themeName
+                binding.itemVersion.settingsItemValue.text = version
 
                 binding.itemDisableAds.settingsItemValue.text = if (settingsViewModel.isAdFreeNeverActivated()) {
                     ""
@@ -147,7 +155,11 @@ class SettingsFragment : BaseVBFragment<FragmentSettingsBinding>() {
                 }
 
                 binding.itemPrecision.settingsItemValue.text = requireContext().getString(
-                    if (it.precision == 1) R.string.settings_item_precision_value else R.string.settings_item_precision_value_plural,
+                    if (it.precision == 1) {
+                        R.string.settings_item_precision_value
+                    } else {
+                        R.string.settings_item_precision_value_plural
+                    },
                     it.precision
                 )
             }
@@ -184,7 +196,9 @@ class SettingsFragment : BaseVBFragment<FragmentSettingsBinding>() {
                     SettingsFragmentDirections.actionCurrenciesFragmentToAdRremoveBottomSheet()
                 )
                 SettingsEffect.ThemeDialog -> changeTheme()
-                is SettingsEffect.ChangeTheme -> updateAppTheme(viewEffect.themeValue)
+                is SettingsEffect.ChangeTheme -> AppCompatDelegate.setDefaultNightMode(
+                    getThemeMode(viewEffect.themeValue)
+                )
                 SettingsEffect.Synchronising -> view?.showSnack(R.string.txt_synchronising)
                 SettingsEffect.Synchronised -> view?.showSnack(R.string.txt_synced)
                 SettingsEffect.OnlyOneTimeSync -> view?.showSnack(R.string.txt_already_synced)

@@ -18,6 +18,7 @@ plugins {
     }
 }
 
+@Suppress("UnstableApiUsage")
 android {
     with(ProjectSettings) {
         compileSdk = COMPILE_SDK_VERSION
@@ -97,7 +98,6 @@ dependencies {
         implementation(WORK_RUNTIME) // android 12 crash fix
         implementation(SPLASH_SCREEN)
         implementation(FIREBASE_PER)
-        implementation(BASE_MOB)
         coreLibraryDesugaring(DESUGARING)
         debugImplementation(LEAK_CANARY)
     }
@@ -106,8 +106,6 @@ dependencies {
 
     with(Dependencies.Common) {
         implementation(KOTLIN_X_DATE_TIME)
-        implementation(SCOPE_MOB)
-        implementation(LOG_MOB)
     }
 
     with(Dependencies.Modules) {
@@ -115,7 +113,11 @@ dependencies {
         implementation(project(RES))
         implementation(project(BILLING))
         implementation(project(AD))
-    }
+        implementation(project(LOGMOB))
+        implementation(project(SCOPEMOB))
+        implementation(project(BASEMOB))
+        implementation(project(ANALYTICS))
 
-    testImplementation(project(Dependencies.Modules.TEST))
+        testImplementation(project(TEST))
+    }
 }

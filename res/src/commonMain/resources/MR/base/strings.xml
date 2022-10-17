@@ -40,7 +40,7 @@
     <string name="txt_ok">OK</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>
-    <string name="text_max_input">Maximum number of input exceeded.</string>
+    <string name="text_too_big_number">Too big number.</string>
     <string name="text_online_last_updated">Online! Last update: %s</string>
     <string name="text_cached_last_updated">Cached! Last update: %s</string>
     <string name="text_offline_last_updated">Offline! Last update: %s</string>
@@ -81,6 +81,7 @@
 
     <!-- SelectCurrencyBottomSheet -->
     <string name="txt_select_base_currency">Select currency</string>
+    <string name="txt_update_favorite_currencies">You can update your favorite currencies</string>
 
     <!-- Settings -->
     <string name="txt_settings">Settings</string>
@@ -125,6 +126,9 @@
 
     <string name="settings_item_on_github_title">On GitHub</string>
     <string name="settings_item_on_github_sub_title">Visit project on GitHub</string>
+
+    <string name="settings_item_version_title">Version</string>
+    <string name="settings_item_version_sub_title">App version</string>
 
     <!-- Currencies -->
     <string name="txt_currencies">Currencies</string>

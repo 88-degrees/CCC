@@ -5,8 +5,6 @@ plugins {
     }
 }
 
-version = ProjectSettings.getVersionName(project)
-
 kotlin {
     android()
 
@@ -17,7 +15,11 @@ kotlin {
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
 
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(Dependencies.Common.KOIN_CORE)
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(project(Dependencies.Modules.TEST))
@@ -55,6 +57,7 @@ kotlin {
     }
 }
 
+@Suppress("UnstableApiUsage")
 android {
     with(ProjectSettings) {
         compileSdk = COMPILE_SDK_VERSION

@@ -41,9 +41,9 @@ kotlin {
                     implementation(KTOR_CONTENT_NEGOTIATION)
                     implementation(SQL_DELIGHT_RUNTIME)
                     implementation(SQL_DELIGHT_COROUTINES_EXT)
-                    implementation(LOG_MOB)
                     implementation(COROUTINES)
                 }
+                implementation(project(Dependencies.Modules.LOGMOB))
             }
         }
         val commonTest by getting {
@@ -115,6 +115,7 @@ android {
     with(ProjectSettings) {
         compileSdk = COMPILE_SDK_VERSION
 
+        @Suppress("UnstableApiUsage")
         defaultConfig {
             minSdk = MIN_SDK_VERSION
             targetSdk = TARGET_SDK_VERSION

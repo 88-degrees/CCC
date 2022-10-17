@@ -8,6 +8,7 @@ plugins {
     }
 }
 
+@Suppress("UnstableApiUsage")
 android {
     with(ProjectSettings) {
         compileSdk = COMPILE_SDK_VERSION
@@ -58,11 +59,9 @@ android {
 }
 
 dependencies {
-    with(DeviceFlavour) {
-        googleImplementation(Dependencies.Android.GOOGLE.ADMOB)
-    }
+    implementation(Dependencies.Common.KOIN_CORE)
 
-    with(Dependencies.Common) {
-        implementation(LOG_MOB)
-    }
+    DeviceFlavour.googleImplementation(Dependencies.Android.GOOGLE.ADMOB)
+
+    implementation(project(Dependencies.Modules.LOGMOB))
 }
