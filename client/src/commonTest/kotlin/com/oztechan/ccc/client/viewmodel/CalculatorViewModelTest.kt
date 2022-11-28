@@ -34,6 +34,7 @@ import io.mockative.classOf
 import io.mockative.given
 import io.mockative.mock
 import io.mockative.verify
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
@@ -91,6 +92,10 @@ internal class CalculatorViewModelTest : BaseViewModelTest<CalculatorViewModel>(
             .invocation { currentBase }
             .thenReturn(currency1.name)
 
+        given(calculatorStorage)
+            .invocation { lastInput }
+            .thenReturn("")
+
         given(currencyDataSource)
             .invocation { collectActiveCurrencies() }
             .thenReturn(flowOf(currencyList))
@@ -111,6 +116,32 @@ internal class CalculatorViewModelTest : BaseViewModelTest<CalculatorViewModel>(
             given(currencyDataSource)
                 .coroutine { getCurrencyByName(currency1.name) }
                 .thenReturn(currency1)
+        }
+    }
+
+    @Test
+    fun `rates should be fetched on init`() = runTest {
+        verify(backendApiService)
+            .coroutine { getRates(currency1.name) }
+            .wasInvoked()
+    }
+
+    @Test
+    fun `init sets the latest base and input`() = runTest {
+        val mock = "mock"
+
+        given(calculatorStorage)
+            .invocation { currentBase }
+            .thenReturn(currency1.name)
+
+        given(calculatorStorage)
+            .invocation { lastInput }
+            .thenReturn(mock)
+
+        subject.state.firstOrNull().let {
+            assertNotNull(it)
+            assertEquals(currency1.name, it.base)
+            assertEquals(mock, it.input)
         }
     }
 

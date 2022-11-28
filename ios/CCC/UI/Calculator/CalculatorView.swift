@@ -45,10 +45,10 @@ struct CalculatorView: View {
                         onBarClick: { observable.event.onBarClick() }
                     )
 
-                    Form {
-                        if observable.state.loading {
-                            FormProgressView()
-                        } else {
+                    if observable.state.loading {
+                        FormProgressView()
+                    } else {
+                        Form {
                             List(
                                 CalculatorUtilKt.toValidList(
                                     observable.state.currencyList,
@@ -67,7 +67,8 @@ struct CalculatorView: View {
                             .listRowBackground(MR.colors().background.get())
                             .animation(.default)
                         }
-                    }.withClearBackground(color: MR.colors().background.get())
+                        .withClearBackground(color: MR.colors().background.get())
+                    }
 
                     KeyboardView(onKeyPress: { observable.event.onKeyPress(key: $0) })
 
@@ -79,13 +80,12 @@ struct CalculatorView: View {
                     }
 
                     if observable.viewModel.shouldShowBannerAd() {
-                        BannerAdView(unitID: "BANNER_AD_UNIT_ID_CALCULATOR".getSecretValue())
-                            .frame(maxHeight: 50)
-                            .padding(.bottom, 20)
+                        AdaptiveBannerAdView(unitID: "BANNER_AD_UNIT_ID_CALCULATOR").adapt()
                     }
 
                 }
             }
+            .background(MR.colors().background_strong.get())
             .navigationBarHidden(true)
         }
         .navigationViewStyle(StackNavigationViewStyle())

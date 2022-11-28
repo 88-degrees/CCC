@@ -46,10 +46,10 @@ struct CurrenciesView: View {
                     )
                 }
 
-                Form {
-                    if observable.state.loading {
-                        FormProgressView()
-                    } else {
+                if observable.state.loading {
+                    FormProgressView()
+                } else {
+                    Form {
                         List(observable.state.currencyList, id: \.name) { currency in
                             CurrenciesItemView(
                                 item: currency,
@@ -61,7 +61,8 @@ struct CurrenciesView: View {
                         .id(UUID())
                         .listRowBackground(MR.colors().background.get())
                     }
-                }.withClearBackground(color: MR.colors().background.get())
+                    .withClearBackground(color: MR.colors().background.get())
+                }
 
                 if observable.viewModel.isFirstRun() {
                     SelectCurrenciesBottomView(
@@ -72,10 +73,7 @@ struct CurrenciesView: View {
                 }
 
                 if observable.viewModel.shouldShowBannerAd() {
-                    BannerAdView(
-                        unitID: "BANNER_AD_UNIT_ID_CURRENCIES".getSecretValue()
-                    ).frame(maxHeight: 50)
-                    .padding(.bottom, 20)
+                    AdaptiveBannerAdView(unitID: "BANNER_AD_UNIT_ID_CURRENCIES").adapt()
                 }
 
             }

@@ -62,9 +62,12 @@ struct WatchersView: View {
                                 observable.event.onAddClick()
                             } label: {
                                 Label(MR.strings().txt_add.get(), systemImage: "plus")
+                                    .imageScale(.large)
+                                    .frame(width: 108.cp(), height: 24.cp(), alignment: .center)
+                                    .font(relative: .body)
                             }
                             .foregroundColor(MR.colors().text.get())
-                            .padding(.vertical, 15)
+                            .padding(.vertical, 15.cp())
                             .background(MR.colors().background_strong.get())
 
                             Spacer()
@@ -77,6 +80,7 @@ struct WatchersView: View {
                 default:
                     VStack {
                         Text(MR.strings().txt_enable_notification_permission.get())
+                            .font(relative: .footnote)
                             .multilineTextAlignment(.center)
                         Button {
                             if let url = URL(
@@ -86,8 +90,11 @@ struct WatchersView: View {
                             }
                         } label: {
                             Label(MR.strings().txt_settings.get(), systemImage: "gear")
+                                .imageScale(.large)
+                                .frame(width: 108.cp(), height: 24.cp(), alignment: .center)
+                                .font(relative: .body)
                         }
-                        .padding()
+                        .padding(4.cp())
                         .background(MR.colors().background_weak.get())
                         .foregroundColor(MR.colors().text.get())
                         .cornerRadius(5)
@@ -97,17 +104,10 @@ struct WatchersView: View {
                 }
 
                 if observable.viewModel.shouldShowBannerAd() {
-                    BannerAdView(
-                        unitID: "BANNER_AD_UNIT_ID_WATCHERS".getSecretValue()
-                    )
-                    .frame(maxHeight: 50)
-                    .padding(.bottom, 55)
-                } else {
-                    Text("").padding(5)
+                    AdaptiveBannerAdView(unitID: "BANNER_AD_UNIT_ID_WATCHERS").adapt()
                 }
             }
             .background(MR.colors().background_strong.get())
-            .edgesIgnoringSafeArea(.bottom)
         }
         .sheet(
             isPresented: $baseBarInfo.isShown,

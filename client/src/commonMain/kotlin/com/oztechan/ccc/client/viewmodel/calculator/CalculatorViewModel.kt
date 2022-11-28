@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 @Suppress("TooManyFunctions")
@@ -70,27 +71,18 @@ class CalculatorViewModel(
     // endregion
 
     init {
-        _state.update {
-            copy(base = calculatorStorage.currentBase, input = "")
-        }
-
-        state.map { it.base }
-            .distinctUntilChanged()
-            .onEach {
-                Logger.d { "CalculatorViewModel base changed $it" }
-                currentBaseChanged(it, true)
-            }
-            .launchIn(viewModelScope)
-
-        state.map { it.input }
-            .distinctUntilChanged()
-            .onEach {
-                Logger.d { "CalculatorViewModel input changed $it" }
-                calculateOutput(it)
-            }
-            .launchIn(viewModelScope)
-
         currencyDataSource.collectActiveCurrencies()
+            .onStart {
+                _state.update {
+                    copy(
+                        base = calculatorStorage.currentBase,
+                        input = calculatorStorage.lastInput,
+                    )
+                }
+                fetchRates()
+                observeBase()
+                observeInput()
+            }
             .onEach {
                 Logger.d { "CalculatorViewModel currencyList changed\n${it.joinToString("\n")}" }
                 _state.update { copy(currencyList = it.toUIModelList()) }
@@ -103,15 +95,36 @@ class CalculatorViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun getRates() = data.rates?.let {
+    private fun observeBase() = state.map { it.base }
+        .distinctUntilChanged()
+        .onEach {
+            Logger.d { "CalculatorViewModel observeBase $it" }
+            currentBaseChanged(it, true)
+        }
+        .launchIn(viewModelScope)
+
+    private fun observeInput() = state.map { it.input }
+        .distinctUntilChanged()
+        .onEach {
+            Logger.d { "CalculatorViewModel observeInput $it" }
+            calculatorStorage.lastInput = it
+            calculateOutput(it)
+        }
+        .launchIn(viewModelScope)
+
+    private fun fetchRates() = data.rates?.let {
         calculateConversions(it, RateState.Cached(it.date))
     } ?: viewModelScope.launch {
+        _state.update { copy(loading = true) }
         runCatching { backendApiService.getRates(calculatorStorage.currentBase) }
-            .onFailure(::getRatesFailed)
-            .onSuccess(::getRatesSuccess)
+            .onFailure(::fetchRatesFailed)
+            .onSuccess(::fetchRatesSuccess)
+            .also {
+                _state.update { copy(loading = false) }
+            }
     }
 
-    private fun getRatesSuccess(currencyResponse: CurrencyResponse) = currencyResponse
+    private fun fetchRatesSuccess(currencyResponse: CurrencyResponse) = currencyResponse
         .toRates().let {
             data.rates = it
             calculateConversions(it, RateState.Online(it.date))
@@ -121,7 +134,7 @@ class CalculatorViewModel(
             }
         }
 
-    private fun getRatesFailed(t: Throwable) = viewModelScope.launchIgnored {
+    private fun fetchRatesFailed(t: Throwable) = viewModelScope.launchIgnored {
         Logger.w(t) { "CalculatorViewModel getRatesFailed" }
         offlineRatesDataSource.getOfflineRatesByBase(
             calculatorStorage.currentBase
@@ -136,10 +149,7 @@ class CalculatorViewModel(
                 ?: run { _effect.emit(CalculatorEffect.FewCurrency) }
 
             _state.update {
-                copy(
-                    rateState = RateState.Error,
-                    loading = false
-                )
+                copy(rateState = RateState.Error)
             }
         }
     }
@@ -157,14 +167,11 @@ class CalculatorViewModel(
                     .whether { it < MINIMUM_ACTIVE_CURRENCY }
                     ?.whetherNot { state.value.input.isEmpty() }
                     ?.let { _effect.emit(CalculatorEffect.FewCurrency) }
-                    ?: run { getRates() }
+                    ?: run { fetchRates() }
             } ?: run {
             _effect.emit(CalculatorEffect.TooBigNumber)
             _state.update {
-                copy(
-                    input = input.dropLast(1),
-                    loading = false
-                )
+                copy(input = input.dropLast(1))
             }
         }
     }
@@ -176,8 +183,7 @@ class CalculatorViewModel(
                     .getFormatted(calculatorStorage.precision)
                     .toStandardDigits()
             },
-            rateState = rateState,
-            loading = false
+            rateState = rateState
         )
     }
 
@@ -186,7 +192,6 @@ class CalculatorViewModel(
         calculatorStorage.currentBase = newBase
         _state.update {
             copy(
-                loading = true,
                 base = newBase,
                 input = _state.value.input,
                 symbol = currencyDataSource.getCurrencyByName(newBase)?.symbol.orEmpty()

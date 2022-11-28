@@ -38,25 +38,24 @@ struct SelectCurrencyView: View {
 
                 VStack {
                     Text(MR.strings().txt_select_base_currency.get())
-                        .font(.title2)
-                        .padding()
-                        .padding(.top, 10)
+                        .font(relative: .title2)
+                        .padding(4.cp())
+                        .padding(.top, 10.cp())
 
-                    Form {
-                        if observable.state.loading {
-                            FormProgressView()
-                        } else {
-
+                    if observable.state.loading {
+                        FormProgressView()
+                    } else {
+                        Form {
                             List(observable.state.currencyList, id: \.name) { currency in
-
                                 SelectCurrencyItemView(item: currency)
                                     .onTapGesture { observable.event.onItemClick(currency: currency) }
                                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
-
-                            }.listRowInsets(.init())
+                            }
+                            .listRowInsets(.init())
                             .listRowBackground(MR.colors().background.get())
                         }
-                    }.withClearBackground(color: MR.colors().background.get())
+                        .withClearBackground(color: MR.colors().background.get())
+                    }
 
                     Spacer()
 
