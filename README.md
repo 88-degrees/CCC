@@ -191,9 +191,9 @@ ViewModel --> View
 
 ## Android Preview
 
-<img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/1.png" width="400px"/><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/2.png" width="320px"/><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/3.png" width="400px"/><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/4.png" width="400px"/>
+<img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/1.png" width="400px"/><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/2.png" width="320px"/><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/3.png" width="400px"/><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/4.png" width="400px"/>
 
-<img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/5.png" width="400px"/><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/6.png" width="400px"/><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/7.png" width="400px"/><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/android/6.png" width="400px"/>
+<img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/5.png" width="400px"/><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/6.png" width="400px"/><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/7.png" width="400px"/><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/android/6.png" width="400px"/>
 
 ## iOS Preview
 
