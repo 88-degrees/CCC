@@ -203,6 +203,6 @@ ViewModel --> View
 
 [![currencies.png](https://github.com/CurrencyConverterCalculator/CCC/raw/develop/art/currencies.png)](https://github.com/CurrencyConverterCalculator/CCC/raw/develop/art/currencies.png)
 
-<a href="https://play.google.com/store/apps/details?id=mustafaozhan.github.com.mycurrencies"><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/play_store.png?raw=true" width="175px"></a>
-<a href="https://apps.apple.com/us/app/currency-converter-calculator/id1617484510"><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/app_store.png?raw=true" width="175px"></a>
-<a href="https://appgallery.huawei.com/app/C104920917"><img src="https://raw.githubusercontent.com/CurrencyConverterCalculator/CCC/develop/art/appgallery.png?raw=true" width="175px"></a>
+<a href="https://play.google.com/store/apps/details?id=mustafaozhan.github.com.mycurrencies"><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/play_store.png?raw=true" width="175px"></a>
+<a href="https://apps.apple.com/us/app/currency-converter-calculator/id1617484510"><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/app_store.png?raw=true" width="175px"></a>
+<a href="https://appgallery.huawei.com/app/C104920917"><img src="https://raw.githubusercontent.com/88-degrees/CCC/better-3.0/art/appgallery.png?raw=true" width="175px"></a>
