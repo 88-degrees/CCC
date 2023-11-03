@@ -6,187 +6,103 @@
 //  Copyright © 2021 orgName. All rights reserved.
 //
 
-import SwiftUI
-import Res
 import Provider
-import NavigationStack
-import GoogleMobileAds
+import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject var observable = ObservableSEEDViewModel<
-        SettingsState,
-        SettingsEffect,
-        SettingsEvent,
-        SettingsData,
-        SettingsViewModel
-    >()
-    @Environment(\.colorScheme) var colorScheme
-    @EnvironmentObject private var navigationStack: NavigationStackCompat
-    @State var emailViewVisibility: Bool = false
-    @State var webViewVisibility: Bool = false
-
-    private let analyticsManager: AnalyticsManager = koin.get()
-
-    enum Dialogs {
-        case removeAd, error
-    }
-
-    var onBaseChange: ((String) -> Void)
+    var event: SettingsEvent
+    var state: SettingsState
 
     var body: some View {
-
         ZStack {
-            MR.colors().background_strong.get().edgesIgnoringSafeArea(.all)
+            Color(\.background_strong).edgesIgnoringSafeArea(.all)
 
             VStack {
-
-                SettingsToolbarView(backEvent: observable.event.onBackClick)
+                SettingsToolbarView(backEvent: event.onBackClick)
 
                 Form {
                     SettingsItemView(
                         imgName: "dollarsign.circle.fill",
-                        title: MR.strings().settings_item_currencies_title.get(),
-                        subTitle: MR.strings().settings_item_currencies_sub_title.get(),
-                        value: MR.strings().settings_active_item_value.get(
-                            parameter: observable.state.activeCurrencyCount
-                        ),
-                        onClick: observable.event.onCurrenciesClick
+                        title: String(\.settings_item_currencies_title),
+                        subTitle: String(\.settings_item_currencies_sub_title),
+                        value: String(\.settings_active_item_value, parameter: state.activeCurrencyCount),
+                        onClick: event.onCurrenciesClick
                     )
 
                     SettingsItemView(
                         imgName: "eyeglasses",
-                        title: MR.strings().settings_item_watchers_title.get(),
-                        subTitle: MR.strings().settings_item_watchers_sub_title.get(),
-                        value: MR.strings().settings_active_item_value.get(
-                            parameter: observable.state.activeWatcherCount
-                        ),
-                        onClick: observable.event.onWatchersClicked
+                        title: String(\.settings_item_watchers_title),
+                        subTitle: String(\.settings_item_watchers_sub_title),
+                        value: String(\.settings_active_item_value, parameter: state.activeWatcherCount),
+                        onClick: event.onWatchersClick
                     )
 
-                    if observable.viewModel.shouldShowRemoveAds() {
-                        SettingsItemView(
-                            imgName: "eye.slash.fill",
-                            title: MR.strings().settings_item_remove_ads_title.get(),
-                            subTitle: MR.strings().settings_item_remove_ads_sub_title.get(),
-                            value: getAdFreeText(),
-                            onClick: observable.event.onRemoveAdsClick
-                        )
-                    }
+                    SettingsItemView(
+                        imgName: "crown.fill",
+                        title: String(\.settings_item_premium_title),
+                        subTitle: String(\.settings_item_premium_sub_title_no_ads),
+                        value: getPremiumText(premiumStatus: state.premiumStatus),
+                        onClick: event.onPremiumClick
+                    )
 
                     SettingsItemView(
                         imgName: "arrow.2.circlepath.circle.fill",
-                        title: MR.strings().settings_item_sync_title.get(),
-                        subTitle: MR.strings().settings_item_sync_sub_title.get(),
+                        title: String(\.settings_item_sync_title),
+                        subTitle: String(\.settings_item_sync_sub_title),
                         value: "",
-                        onClick: observable.event.onSyncClick
+                        onClick: event.onSyncClick
                     )
 
                     if MailView.canSendEmail() {
                         SettingsItemView(
                             imgName: "envelope.fill",
-                            title: MR.strings().settings_item_feedback_title.get(),
-                            subTitle: MR.strings().settings_item_feedback_sub_title.get(),
+                            title: String(\.settings_item_feedback_title),
+                            subTitle: String(\.settings_item_feedback_sub_title),
                             value: "",
-                            onClick: observable.event.onFeedBackClick
+                            onClick: event.onFeedBackClick
                         )
                     }
 
                     SettingsItemView(
                         imgName: "chevron.left.slash.chevron.right",
-                        title: MR.strings().settings_item_on_github_title.get(),
-                        subTitle: MR.strings().settings_item_on_github_sub_title.get(),
+                        title: String(\.settings_item_on_github_title),
+                        subTitle: String(\.settings_item_on_github_sub_title),
                         value: "",
-                        onClick: observable.event.onOnGitHubClick
+                        onClick: event.onOnGitHubClick
                     )
 
                     SettingsItemView(
-                        imgName: "123.rectangle",
-                        title: MR.strings().settings_item_version_title.get(),
-                        subTitle: MR.strings().settings_item_version_sub_title.get(),
-                        value: observable.state.version,
+                        imgName: "textformat.123",
+                        title: String(\.settings_item_version_title),
+                        subTitle: String(\.settings_item_version_sub_title),
+                        value: state.version,
                         onClick: {}
                     )
                 }.edgesIgnoringSafeArea(.bottom)
-                    .withClearBackground(color: MR.colors().background.get())
+                    .withClearBackground(color: Color(\.background))
 
-                if observable.viewModel.shouldShowBannerAd() {
+                if state.isBannerAdVisible {
                     AdaptiveBannerAdView(unitID: "BANNER_AD_UNIT_ID_SETTINGS").adapt()
                 }
-
             }
             .navigationBarHidden(true)
         }
-        .sheet(isPresented: $emailViewVisibility) {
-            MailView(isShowing: $emailViewVisibility)
-        }
-        .sheet(isPresented: $webViewVisibility) {
-            WebView(url: NSURL(string: MR.strings().github_url.get())! as URL)
-        }
-        .onAppear {
-            observable.startObserving()
-            analyticsManager.trackScreen(screenName: ScreenName.Settings())
-        }
-        .onDisappear { observable.stopObserving() }
-        .onReceive(observable.effect) { onEffect(effect: $0) }
     }
 
-    // swiftlint:disable cyclomatic_complexity
-    private func onEffect(effect: SettingsEffect) {
-        logger.i(message: {"SettingsView onEffect \(effect.description)"})
-        switch effect {
-        case is SettingsEffect.Back:
-            navigationStack.pop()
-        case is SettingsEffect.OpenCurrencies:
-            navigationStack.push(CurrenciesView(onBaseChange: onBaseChange))
-        case is SettingsEffect.OpenWatchers:
-            navigationStack.push(WatchersView())
-        case is SettingsEffect.FeedBack:
-            emailViewVisibility.toggle()
-        case is SettingsEffect.OnGitHub:
-            webViewVisibility.toggle()
-        case is SettingsEffect.Synchronising:
-            showSnack(text: MR.strings().txt_synchronising.get())
-        case is SettingsEffect.Synchronised:
-            showSnack(text: MR.strings().txt_synced.get())
-        case is SettingsEffect.OnlyOneTimeSync:
-            showSnack(text: MR.strings().txt_already_synced.get())
-        case is SettingsEffect.AlreadyAdFree:
-            showSnack(text: MR.strings().txt_ads_already_disabled.get())
-        case is SettingsEffect.RemoveAds:
-            showAlert(
-                title: MR.strings().txt_remove_ads.get(),
-                text: MR.strings().txt_remove_ads_text.get(),
-                buttonText: MR.strings().txt_watch.get(),
-                action: {
-                    RewardedAd(
-                        rewardFunction: { observable.viewModel.updateAddFreeDate() },
-                        errorFunction: {
-                            showAlert(
-                                title: MR.strings().txt_remove_ads.get(),
-                                text: MR.strings().error_text_unknown.get(),
-                                buttonText: MR.strings().cancel.get()
-                            )
-                        }
-                    ).show()
-                }
-            )
-        default:
-            logger.i(message: {"SettingsView unknown effect"})
-        }
-    }
+    private func getPremiumText(premiumStatus: PremiumStatus) -> String {
+        logger.i(message: { "SettingsView getPremiumText \(premiumStatus.description)" })
 
-    private func getAdFreeText() -> String {
-        if observable.viewModel.isAdFreeNeverActivated() {
+        switch premiumStatus {
+        case is PremiumStatus.NeverActivated:
             return ""
-        } else {
-            if observable.viewModel.isRewardExpired() {
-                return MR.strings().settings_item_remove_ads_value_expired.get()
-            } else {
-                return MR.strings().settings_item_remove_ads_value_will_expire.get(
-                    parameter: observable.state.addFreeEndDate
-                )
-            }
+        case let activateStatus as PremiumStatus.Active:
+            return String(\.settings_item_premium_value_will_expire, parameter: activateStatus.until)
+        case let expiredStatus as PremiumStatus.Expired:
+            return String(\.settings_item_premium_value_expired, parameter: expiredStatus.at)
+        default:
+            return ""
         }
     }
 }

@@ -2,55 +2,47 @@
 //  WatchersView.swift
 //  CCC
 //
-//  Created by Mustafa Ozhan on 26.04.22.
-//  Copyright © 2022 orgName. All rights reserved.
+//  Created by Mustafa Ozhan on 24.08.23.
+//  Copyright © 2023 orgName. All rights reserved.
 //
 
-import SwiftUI
 import Provider
-import Res
-import NavigationStack
+import SwiftUI
 
 struct WatchersView: View {
+    @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject var observable = ObservableSEEDViewModel<
-        WatchersState,
-        WatchersEffect,
-        WatchersEvent,
-        WatchersData,
-        WatchersViewModel
-    >()
-    @EnvironmentObject private var navigationStack: NavigationStackCompat
-    @StateObject var notificationManager = NotificationManager()
-    @State var baseBarInfo = BarInfo(isShown: false, watcher: nil)
-    @State var targetBarInfo = BarInfo(isShown: false, watcher: nil)
+    var event: WatchersEvent
+    var state: WatchersState
+    var authorizationStatus: UNAuthorizationStatus?
 
-    private let analyticsManager: AnalyticsManager = koin.get()
+    @Binding var baseBarInfo: WatchersRootView.BarInfo
+    @Binding var targetBarInfo: WatchersRootView.BarInfo
 
     var body: some View {
         ZStack {
-            MR.colors().background_strong.get().edgesIgnoringSafeArea(.all)
+            Color(\.background_strong).edgesIgnoringSafeArea(.all)
 
             VStack {
-                WatchersToolbarView(backEvent: observable.event.onBackClick)
+                WatchersToolbarView(backEvent: event.onBackClick)
 
-                switch notificationManager.authorizationStatus {
+                switch authorizationStatus {
                 case nil:
                     Spacer()
                 case .authorized:
                     Form {
-                        List(observable.state.watcherList, id: \.id) { watcher in
+                        List(state.watcherList, id: \.id) { watcher in
                             WatcherItem(
                                 isBaseBarShown: $baseBarInfo.isShown,
                                 isTargetBarShown: $targetBarInfo.isShown,
                                 watcher: watcher,
-                                event: observable.event
+                                event: event
                             )
                         }
                         .listRowInsets(.init())
-                        .listRowBackground(MR.colors().background.get())
-                        .background(MR.colors().background.get())
-                    }.withClearBackground(color: MR.colors().background.get())
+                        .listRowBackground(\.background)
+                        .background(\.background)
+                    }.withClearBackground(color: Color(\.background))
 
                     Spacer()
 
@@ -59,27 +51,26 @@ struct WatchersView: View {
                             Spacer()
 
                             Button {
-                                observable.event.onAddClick()
+                                event.onAddClick()
                             } label: {
-                                Label(MR.strings().txt_add.get(), systemImage: "plus")
+                                Label(String(\.txt_add), systemImage: "plus")
                                     .imageScale(.large)
                                     .frame(width: 108.cp(), height: 24.cp(), alignment: .center)
                                     .font(relative: .body)
                             }
-                            .foregroundColor(MR.colors().text.get())
+                            .foregroundColor(\.text)
                             .padding(.vertical, 15.cp())
-                            .background(MR.colors().background_strong.get())
+                            .background(\.background_strong)
 
                             Spacer()
-
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .background(MR.colors().background_strong.get())
+                    .background(\.background_strong)
 
                 default:
                     VStack {
-                        Text(MR.strings().txt_enable_notification_permission.get())
+                        Text(String(\.txt_enable_notification_permission))
                             .font(relative: .footnote)
                             .multilineTextAlignment(.center)
                         Button {
@@ -89,111 +80,25 @@ struct WatchersView: View {
                                 UIApplication.shared.open(url)
                             }
                         } label: {
-                            Label(MR.strings().txt_settings.get(), systemImage: "gear")
+                            Label(String(\.txt_settings), systemImage: "gear")
                                 .imageScale(.large)
                                 .frame(width: 108.cp(), height: 32.cp(), alignment: .center)
                                 .font(relative: .body)
                         }
                         .padding(4.cp())
-                        .background(MR.colors().background_weak.get())
-                        .foregroundColor(MR.colors().text.get())
+                        .background(\.background_weak)
+                        .foregroundColor(\.text)
                         .cornerRadius(5.cp())
                         .padding(8.cp())
-
                     }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                        .background(MR.colors().background.get())
+                        .background(\.background)
                 }
 
-                if observable.viewModel.shouldShowBannerAd() {
+                if state.isBannerAdVisible {
                     AdaptiveBannerAdView(unitID: "BANNER_AD_UNIT_ID_WATCHERS").adapt()
                 }
             }
-            .background(MR.colors().background_strong.get())
+            .background(\.background_strong)
         }
-        .sheet(
-            isPresented: $baseBarInfo.isShown,
-            content: {
-                SelectCurrencyView(
-                    isBarShown: $baseBarInfo.isShown,
-                    onCurrencySelected: {
-                        observable.event.onBaseChanged(
-                            watcher: baseBarInfo.watcher!,
-                            newBase: $0
-                        )
-                    }
-                ).environmentObject(navigationStack)
-            }
-        )
-        .sheet(
-            isPresented: $targetBarInfo.isShown,
-            content: {
-                SelectCurrencyView(
-                    isBarShown: $targetBarInfo.isShown,
-                    onCurrencySelected: {
-                        observable.event.onTargetChanged(
-                            watcher: targetBarInfo.watcher!,
-                            newTarget: $0
-                        )
-                    }
-                ).environmentObject(navigationStack)
-            }
-        )
-        .onAppear {
-            observable.startObserving()
-            notificationManager.reloadAuthorisationStatus()
-            analyticsManager.trackScreen(screenName: ScreenName.Watchers())
-        }
-        .onDisappear { observable.stopObserving() }
-        .onReceive(observable.effect) { onEffect(effect: $0) }
-        .onReceive(NotificationCenter.default.publisher(
-            for: UIApplication.willEnterForegroundNotification
-        )) { _ in
-            notificationManager.reloadAuthorisationStatus()
-        }
-        .onChange(of: notificationManager.authorizationStatus) {
-            onAuthorisationChange(authorizationStatus: $0)
-        }
-        .animation(.default)
-    }
-
-    private func onEffect(effect: WatchersEffect) {
-        logger.i(message: {"WatchersView onEffect \(effect.description)"})
-        switch effect {
-        case is WatchersEffect.Back:
-            navigationStack.pop()
-        // swiftlint:disable force_cast
-        case is WatchersEffect.SelectBase:
-            baseBarInfo.watcher = (effect as! WatchersEffect.SelectBase).watcher
-            baseBarInfo.isShown.toggle()
-        // swiftlint:disable force_cast
-        case is WatchersEffect.SelectTarget:
-            targetBarInfo.watcher = (effect as! WatchersEffect.SelectTarget).watcher
-            targetBarInfo.isShown.toggle()
-        case is WatchersEffect.TooBigNumber:
-            showSnack(text: MR.strings().text_too_big_number.get(), isTop: true)
-        case is WatchersEffect.InvalidInput:
-            showSnack(text: MR.strings().text_invalid_input.get(), isTop: true)
-        case is WatchersEffect.MaximumNumberOfWatchers:
-            showSnack(text: MR.strings().text_maximum_number_of_watchers.get(), isTop: true)
-        default:
-            logger.i(message: {"WatchersView unknown effect"})
-        }
-    }
-
-    private func onAuthorisationChange(authorizationStatus: UNAuthorizationStatus?) {
-        logger.i(message: {"WatchersView onAuthorisationChange \(String(describing: authorizationStatus?.rawValue))"})
-        switch authorizationStatus {
-        case .notDetermined:
-            notificationManager.requestAuthorisation()
-        case .authorized:
-            notificationManager.reloadAuthorisationStatus()
-        default:
-            break
-        }
-    }
-
-    struct BarInfo {
-        var isShown: Bool
-        var watcher: Provider.Watcher?
     }
 }

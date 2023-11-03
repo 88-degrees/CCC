@@ -16,7 +16,6 @@ final class ObservableSEEDViewModel<
     Data: BaseData,
     ViewModel: BaseSEEDViewModel<State, Effect, Event, Data>
 >: ObservableObject {
-
     let viewModel: ViewModel = koin.get()
 
     @Published private(set) var state: State
@@ -24,40 +23,45 @@ final class ObservableSEEDViewModel<
     let effect = PassthroughSubject<Effect, Never>()
     let event: Event
 
-    let data: Data?
+    private var stateClosable: Closeable?
+    private var effectClosable: Closeable?
 
-    private var closeable: RuntimeCloseable!
-
-    // swiftlint:disable force_cast
     init() {
-        logger.i(message: {"ObservableSEED \(ViewModel.description()) init"})
+        logger.d(message: { "ObservableSEED \(ViewModel.description()) init" })
 
-        self.state = State()
+        // swiftlint:disable:next force_cast
+        self.state = viewModel.state!.value as! State
         self.event = viewModel.event!
-        self.data = viewModel.data
     }
 
     deinit {
-        viewModel.onCleared()
+        closeClosables()
     }
 
     func startObserving() {
-        logger.i(message: {"ObservableSEED \(ViewModel.description()) startObserving"})
+        logger.d(message: { "ObservableSEED \(ViewModel.description()) startObserving" })
 
         if viewModel.state != nil {
-            closeable = IOSCoroutineUtilKt.observeWithCloseable(viewModel.state!, onChange: {
+            stateClosable = CoroutineUtilKt.observeWithCloseable(viewModel.state!, onChange: {
+                // swiftlint:disable:next force_cast
                 self.state = $0 as! State
             })
         }
         if viewModel.effect != nil {
-            closeable = IOSCoroutineUtilKt.observeWithCloseable(viewModel.effect!, onChange: {
+            effectClosable = CoroutineUtilKt.observeWithCloseable(viewModel.effect!, onChange: {
+                // swiftlint:disable:next force_cast
                 self.effect.send($0 as! Effect)
             })
         }
     }
 
     func stopObserving() {
-        logger.i(message: {"ObservableSEED \(ViewModel.description()) stopObserving"})
-        closeable.close()
+        logger.d(message: { "ObservableSEED \(ViewModel.description()) stopObserving" })
+        closeClosables()
+    }
+
+    private func closeClosables() {
+        stateClosable?.close()
+        effectClosable?.close()
     }
 }

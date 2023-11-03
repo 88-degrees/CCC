@@ -7,42 +7,36 @@
 //
 
 import SwiftUI
-import Res
 
 struct KeyboardView: View {
     var onKeyPress: (String) -> Void
 
-    // swiftlint:disable line_length
-    let keys = [
-        [MR.strings().seven.get(), MR.strings().eight.get(), MR.strings().nine.get(), MR.strings().multiply.get()],
-        [MR.strings().four.get(), MR.strings().five.get(), MR.strings().six.get(), MR.strings().divide.get()],
-        [MR.strings().one.get(), MR.strings().two.get(), MR.strings().three.get(), MR.strings().minus.get()],
-        [MR.strings().dot.get(), MR.strings().zero.get(), MR.strings().percent.get(), MR.strings().plus.get()],
-        [MR.strings().open_parentheses.get(), MR.strings().triple_zero.get(), MR.strings().ac.get(), MR.strings().delete_.get(), MR.strings().close_parentheses.get()]
+    private let keys = [
+        [String(\.seven), String(\.eight), String(\.nine), String(\.multiply)],
+        [String(\.four), String(\.five), String(\.six), String(\.divide)],
+        [String(\.one), String(\.two), String(\.three), String(\.minus)],
+        [String(\.dot), String(\.zero), String(\.percent), String(\.plus)],
+        // swiftlint:disable:next line_length
+        [String(\.open_parentheses), String(\.triple_zero), String(\.ac), String(\.delete_), String(\.close_parentheses)]
     ]
 
     var body: some View {
-
         VStack(alignment: .center) {
             ForEach(keys, id: \.self) { items in
-
                 HStack(alignment: .center) {
                     ForEach(items, id: \.self) { item in
-
                         Button(
-                            action: { onKeyPress(item)},
+                            action: { onKeyPress(item) },
                             label: {
                                 Text(item)
                                     .font(relative: .title2)
-                                    .foregroundColor(MR.colors().text.get())
+                                    .foregroundColor(\.text)
                                     .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                             }
                         )
-
                     }
                 }
-
             }
-        }.background(MR.colors().background_strong.get())
+        }.background(\.background_strong)
     }
 }

@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Res
 
 struct SettingsToolbarView: View {
     var backEvent: () -> Void
@@ -16,7 +15,7 @@ struct SettingsToolbarView: View {
         HStack {
             ToolbarButton(clickEvent: backEvent, imgName: "chevron.left")
 
-            Text(MR.strings().txt_settings.get())
+            Text(String(\.txt_settings))
                 .font(relative: .title3)
 
             Spacer()

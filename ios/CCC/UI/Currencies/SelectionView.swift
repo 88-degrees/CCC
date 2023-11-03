@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Res
 
 struct SelectionView: View {
     var onCloseClick: () -> Void
@@ -15,7 +14,6 @@ struct SelectionView: View {
 
     var body: some View {
         HStack {
-
             ToolbarButton(clickEvent: onCloseClick, imgName: "xmark")
 
             Spacer()
@@ -23,24 +21,23 @@ struct SelectionView: View {
             Button(
                 action: { updateAllCurrenciesState(true) },
                 label: {
-                    Text(MR.strings().btn_select_all.get())
+                    Text(String(\.btn_select_all))
                         .font(relative: .headline)
-                        .foregroundColor(MR.colors().text.get())
+                        .foregroundColor(\.text)
                 }
             ).padding(.trailing, 10.cp())
 
             Button(
                 action: { updateAllCurrenciesState(false) },
                 label: {
-                    Text(MR.strings().btn_de_select_all.get())
+                    Text(String(\.btn_de_select_all))
                         .font(relative: .headline)
-                        .foregroundColor(MR.colors().text.get())
+                        .foregroundColor(\.text)
                 }
             )
-
         }
-        .padding(top: 20.cp(), leading: 10.cp(), bottom: 20.cp(), trailing: 20.cp())
-        .background(MR.colors().background_weak.get())
-        .frame(maxHeight: 52.cp())
+        .padding(top: 15.cp(), leading: 10.cp(), bottom: 15.cp(), trailing: 20.cp())
+        .background(\.background_weak)
+        .frame(maxHeight: 54.cp(), alignment: .bottom)
     }
 }

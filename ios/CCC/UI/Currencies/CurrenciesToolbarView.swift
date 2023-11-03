@@ -7,10 +7,9 @@
 //
 
 import SwiftUI
-import Res
 
 struct CurrenciesToolbarView: View {
-    var firstRun: Bool
+    var isOnboardingVisible: Bool
     var onBackClick: () -> Void
     var onQueryChange: (String) -> Void
 
@@ -19,24 +18,26 @@ struct CurrenciesToolbarView: View {
 
     var body: some View {
         HStack {
-
-            if !firstRun {
+            if isOnboardingVisible {
+                Text("").padding(trailing: 8.cp())
+            } else {
                 ToolbarButton(clickEvent: onBackClick, imgName: "chevron.left")
             }
 
             if searchVisibilty {
                 Spacer()
 
-                TextField(MR.strings().search.get(), text: $query)
+                TextField(String(\.search), text: $query)
                     .font(relative: .headline)
                     .onChange(of: query) { onQueryChange($0) }
+                    .padding(8.cp())
                     .background(
                         RoundedRectangle(cornerRadius: 3.cp())
-                            .fill(MR.colors().background.get())
+                            .fill(Color(\.background))
                     )
                     .disableAutocorrection(true)
                     .multilineTextAlignment(.center)
-                    .padding(1.cp())
+                    .frame(height: 24.cp())
 
                 Spacer()
 
@@ -48,10 +49,8 @@ struct CurrenciesToolbarView: View {
                     },
                     imgName: "xmark"
                 )
-
             } else {
-
-                Text(MR.strings().txt_currencies.get()).font(relative: .title3)
+                Text(String(\.txt_currencies)).font(relative: .title3)
 
                 Spacer()
 
@@ -60,7 +59,6 @@ struct CurrenciesToolbarView: View {
                     imgName: "magnifyingglass"
                 )
             }
-
         }.padding(top: 20.cp(), leading: 10.cp(), bottom: 10.cp(), trailing: 20.cp())
     }
 }

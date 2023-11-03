@@ -6,13 +6,13 @@
 //  Copyright © 2022 orgName. All rights reserved.
 //
 
-import SwiftUI
-import Provider
-import Res
-import NavigationStack
 import Combine
+import NavigationStack
+import Provider
+import SwiftUI
 
 struct WatcherItem: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var relationSelection = 0
     @State private var amount = ""
 
@@ -24,16 +24,16 @@ struct WatcherItem: View {
 
     var body: some View {
         HStack {
-            Text(MR.strings().one.get()).font(relative: .body)
+            Text(String(\.one)).font(relative: .body)
 
             CurrencyImageView(imageName: watcher.base)
                 .onTapGesture { event.onBaseClick(watcher: watcher) }
 
             Picker("", selection: $relationSelection) {
-                Text(MR.strings().txt_smaller.get())
+                Text(String(\.txt_smaller))
                     .font(relative: .title)
                     .tag(0)
-                Text(MR.strings().txt_grater.get())
+                Text(String(\.txt_grater))
                     .font(relative: .title)
                     .tag(1)
             }
@@ -45,14 +45,14 @@ struct WatcherItem: View {
 
             Spacer()
 
-            TextField(MR.strings().txt_rate.get(), text: $amount)
+            TextField(String(\.txt_rate), text: $amount)
                 .keyboardType(.decimalPad)
                 .font(relative: .body)
                 .multilineTextAlignment(TextAlignment.center)
                 .fixedSize()
                 .lineLimit(1)
                 .padding(top: 5.cp(), leading: 15.cp(), bottom: 5.cp(), trailing: 15.cp())
-                .background(MR.colors().background_weak.get())
+                .background(\.background_weak)
                 .cornerRadius(7.cp())
                 .onChange(of: amount) {
                     amount = event.onRateChange(watcher: watcher, rate: $0)
@@ -68,7 +68,6 @@ struct WatcherItem: View {
                 .imageScale(.large)
                 .padding(.leading, 10.cp())
                 .onTapGesture { event.onDeleteClick(watcher: watcher) }
-
         }
         .padding(.vertical, 4.cp())
         .onAppear {
