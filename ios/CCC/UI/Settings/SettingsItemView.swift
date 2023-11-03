@@ -7,10 +7,9 @@
 //
 
 import SwiftUI
-import Res
 
 struct SettingsItemView: View {
-
+    @Environment(\.colorScheme) private var colorScheme
     let imgName: String
     let title: String
     let subTitle: String
@@ -23,7 +22,7 @@ struct SettingsItemView: View {
                 .frame(width: 48.cp(), height: 48.cp(), alignment: .center)
                 .font(size: 24.cp())
                 .imageScale(.large)
-                .accentColor(MR.colors().text.get())
+                .accentColor(\.text)
                 .padding(top: 8.cp(), leading: 0, bottom: 8.cp(), trailing: 8.cp())
 
             VStack {
@@ -50,10 +49,10 @@ struct SettingsItemView: View {
             Image(systemName: "chevron.right")
                 .frame(width: 48.cp(), height: 48.cp(), alignment: .center)
                 .imageScale(.large)
-                .accentColor(MR.colors().text.get())
+                .accentColor(\.text)
         }
         .listRowInsets(.init())
-        .listRowBackground(MR.colors().background.get())
+        .listRowBackground(\.background)
         .contentShape(Rectangle())
         .onTapGesture { onClick() }
         .lineLimit(1)

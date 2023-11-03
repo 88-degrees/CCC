@@ -7,39 +7,42 @@
 //
 
 import SwiftUI
-import Res
 
 struct OutputView: View {
-
     var baseCurrency: String
     var output: String
     var symbol: String
     var onBarClick: () -> Void
+    var onOutputLongClick: () -> Void
 
     var body: some View {
         VStack(alignment: .leading) {
-
             HStack {
                 CurrencyImageView(imageName: baseCurrency)
 
                 Text(baseCurrency)
-                    .foregroundColor(MR.colors().text.get())
+                    .foregroundColor(\.text)
                     .font(relative: .body)
 
                 if !output.isEmpty {
                     Text("=  \(output)")
-                        .foregroundColor(MR.colors().text.get())
+                        .foregroundColor(\.text)
                         .font(relative: .body)
+                        .onTapGesture {
+                            onBarClick()
+                        }
+                        .onLongPressGesture {
+                            onOutputLongClick()
+                        }
                 }
 
                 Text(symbol)
-                    .foregroundColor(MR.colors().text.get())
+                    .foregroundColor(\.text)
                     .font(relative: .body)
             }
             .frame(minWidth: 0, maxWidth: .infinity, alignment: .bottomLeading)
             .padding(.horizontal, 20.cp())
             .animation(.default)
-
         }
         .contentShape(Rectangle())
         .lineLimit(1)

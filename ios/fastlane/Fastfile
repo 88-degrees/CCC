@@ -47,30 +47,14 @@ platform :ios do
 
         lane :build do
             install_certificate_and_profile(match_type: "adhoc")
-            build_project(
-                match_type: "adhoc",
-                profile: "match AdHoc com.oztechan.ccc"
-            )
-        end
-
-        lane :distribute do
-            install_certificate_and_profile(match_type: "adhoc")
             add_test_devices
             build_project(
                 match_type: "adhoc",
                 profile: "match AdHoc com.oztechan.ccc"
             )
-            firebase_app_distribution(
-                app: ENV["IOS_GOOGLE_FIREBASE_APP_ID"],
-                groups: "QA",
-                release_notes: changelog_from_git_commits(commits_count: 1),
-                firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
-                ipa_path: "../ios/CCC.ipa"
-            )
-            upload_crashlytics_symbols
         end
 
-        lane :publish do
+        lane :store_build do
             install_certificate_and_profile(match_type: "appstore")
             add_test_devices
             build_project(
@@ -78,6 +62,17 @@ platform :ios do
                 profile: "match AppStore com.oztechan.ccc"
             )
             pilot(skip_waiting_for_build_processing: true)
+            upload_crashlytics_symbols
+        end
+
+        lane :distribute do
+            firebase_app_distribution(
+                app: ENV["IOS_GOOGLE_FIREBASE_APP_ID"],
+                groups: "QA",
+                release_notes: changelog_from_git_commits(commits_count: 1),
+                firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
+                ipa_path: "../ios/CCC.ipa"
+            )
             upload_crashlytics_symbols
         end
 

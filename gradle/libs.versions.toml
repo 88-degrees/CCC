@@ -1,0 +1,138 @@
+[versions]
+
+kotlin = "1.9.10"
+ksp = "1.9.10-1.0.13"
+detekt = "1.23.1"
+androidGradlePlugin = "8.1.2"
+composeCompiler = "1.5.3"
+compose = "1.5.3"
+glance = "1.0.0"
+material3 = "1.1.2"
+androidDesugaring = "2.0.3"
+androidMaterial = "1.10.0"
+composeActivity = "1.8.0"
+constraintLayout = "2.1.4"
+koinCore = "3.5.0"
+koinCompose = "3.5.0"
+koinAndroid = "3.5.0"
+koinKtor = "3.5.1"
+ktor = "2.3.4"
+multiplatformSettings = "1.1.0"
+firebaseAnalytics = "21.3.0"
+firebaseRemoteConfig = "21.5.0"
+googleServices = "4.4.0"
+firebasePer = "20.5.0"
+firebasePerPlugin = "1.4.2"
+firebaseCrashlyticsPlugin = "2.9.9"
+googleAds = "22.4.0"
+huaweiAds = "3.4.66.303"
+huaweiOsm = "1.3.35"
+navigation = "2.7.4"
+playCore = "1.10.3"
+kotlinXDateTime = "0.4.1"
+coroutines = "1.7.3"
+billing = "6.0.1"
+leakCanary = "2.12"
+sqlDelight = "1.5.5"
+lifecycle = "2.6.2"
+mokoResources = "0.23.0"
+buildKonfig = "0.14.0"
+splashScreen = "1.0.1"
+kover = "0.6.1"
+rootBeer = "0.1.0"
+mockative = "2.0.1"
+anrWatchDog = "1.4.0"
+kermit = "2.0.2"
+konsist = "0.11.0"
+
+[libraries]
+# COMMON
+common-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+common-testAnnotations = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }
+common-koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
+common-multiplatformSettings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
+common-multiplatformSettingsCoroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
+common-kotlinXDateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinXDateTime" }
+common-ktorLogging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+common-ktorJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+common-ktorClientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+common-ktorClientMock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+common-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+common-coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+common-sqlDelightCoroutinesExt = { module = "com.squareup.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
+common-mokoResources = { module = "dev.icerock.moko:resources", version.ref = "mokoResources" }
+common-mockative = { module = "io.mockative:mockative", version.ref = "mockative" }
+common-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+common-kermitCrashlytics = { module = "co.touchlab:kermit-crashlytics", version.ref = "kermit" }
+common-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+common-konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
+
+# ANDROID
+android-androidDesugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "androidDesugaring" }
+android-androidMaterial = { module = "com.google.android.material:material", version.ref = "androidMaterial" }
+android-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+android-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayout" }
+android-composeCompiler = { module = "androidx.compose.compiler:compiler", version.ref = "composeCompiler" }
+android-composeToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+android-composeTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+android-composeActivity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
+android-composeNavigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+android-glance = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
+android-navigation = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
+android-koinCompose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCompose" }
+android-koinAndroid = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+android-firebaseAnalytics = { module = "com.google.firebase:firebase-analytics-ktx", version.ref = "firebaseAnalytics" }
+android-firebaseRemoteConfig = { module = "com.google.firebase:firebase-config-ktx", version.ref = "firebaseRemoteConfig" }
+android-firebasePer = { module = "com.google.firebase:firebase-perf-ktx", version.ref = "firebasePer" }
+android-lifecycleViewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+android-lifecycleRuntime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+android-ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+android-sqlliteDriver = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqlDelight" }
+android-leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
+android-splashScreen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreen" }
+android-rootBeer = { module = "com.scottyab:rootbeer-lib", version.ref = "rootBeer" }
+android-anrWatchDog = { module = "com.github.anrwatchdog:anrwatchdog", version.ref = "anrWatchDog" }
+
+# ANDROID GOOGLE
+android-google-billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
+android-google-googleAds = { module = "com.google.android.gms:play-services-ads", version.ref = "googleAds" }
+android-google-playCore = { module = "com.google.android.play:core", version.ref = "playCore" }
+
+# ANDROID HUAWEI
+android-huawei-huaweiAds = { module = "com.huawei.hms:ads-prime", version.ref = "huaweiAds" }
+android-huawei-huaweiOsm = { module = "com.huawei.hms:ads-omsdk", version.ref = "huaweiOsm" }
+
+# IOS
+ios-ktor = { module = "io.ktor:ktor-client-ios", version.ref = "ktor" }
+ios-sqlliteDriver = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqlDelight" }
+
+# JVM
+jvm-ktor = { module = "io.ktor:ktor-client-apache", version.ref = "ktor" }
+jvm-ktorCore = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+jvm-ktorNetty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+jvm-koinKtor = { module = "io.insert-koin:koin-ktor", version.ref = "koinKtor" }
+common-ktorServerContentNegotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+jvm-sqlliteDriver = { module = "com.squareup.sqldelight:sqlite-driver", version.ref = "sqlDelight" }
+jvm-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+# PROCESSORS
+processors-mockative = { module = "io.mockative:mockative-processor", version.ref = "mockative" }
+
+[plugins]
+
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+safeArgs = { id = "androidx.navigation.safeargs", version.ref = "navigation" }
+buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
+firebaseCrashlyticsPlugin = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebasePerPlugin = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerPlugin" }
+sqlDelight = { id = "com.squareup.sqldelight", version.ref = "sqlDelight" }
+mokoResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "mokoResources" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

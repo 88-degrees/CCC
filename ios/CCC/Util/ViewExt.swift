@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PopupView
 
 extension View {
     func withClearBackground(color: Color) -> some View {
@@ -51,7 +52,7 @@ extension View {
         return self.font(.system(size: size))
     }
 
-    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable:next cyclomatic_complexity
     private func getSizeFromStyle(style: Font.TextStyle) -> Double {
         switch style {
         case .largeTitle:
@@ -79,6 +80,29 @@ extension View {
         @unknown default:
             fatalError("Expected to have a valid style")
         }
+    }
+
+    func snack<PopupContent: View>(
+        isPresented: Binding<Bool>,
+        @ViewBuilder view: @escaping () -> PopupContent
+    ) -> some View {
+        self.popup(
+            isPresented: isPresented,
+            type: .toast,
+            autohideIn: 2.0,
+            closeOnTapOutside: true,
+            view: view
+        )
+    }
+
+    func alert<PopupContent: View>(
+        isPresented: Binding<Bool>,
+        @ViewBuilder view: @escaping () -> PopupContent
+    ) -> some View {
+        self.popup(
+            isPresented: isPresented,
+            view: view
+        )
     }
 }
 

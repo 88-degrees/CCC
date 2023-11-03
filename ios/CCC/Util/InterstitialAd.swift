@@ -7,7 +7,6 @@
 //
 
 import GoogleMobileAds
-import Res
 
 final class InterstitialAd: NSObject, GADFullScreenContentDelegate {
     func show() {
@@ -16,14 +15,18 @@ final class InterstitialAd: NSObject, GADFullScreenContentDelegate {
             request: GADRequest(),
             completionHandler: { interstitialAd, error in
                 if let error = error {
-                    logger.w(message: {"InterstitialAd show \(error.localizedDescription)"})
+                    logger.e(message: { "InterstitialAd show \(error.localizedDescription)" })
                     return
                 }
 
-                interstitialAd?.fullScreenContentDelegate = self
-                interstitialAd?.present(
-                    fromRootViewController: UIApplication.shared.windows.first!.rootViewController!
-                )
+                if UIApplication.shared.applicationState == .active {
+                    interstitialAd?.fullScreenContentDelegate = self
+                    interstitialAd?.present(
+                        fromRootViewController: WindowUtil.getCurrentController()
+                    )
+                } else {
+                    logger.v(message: { "InterstitialAd not showed appState is not active" })
+                }
             }
         )
     }

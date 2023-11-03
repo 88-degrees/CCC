@@ -6,8 +6,8 @@
 //  Copyright © 2020 orgName. All rights reserved.
 //
 
-import SwiftUI
 import Provider
+import SwiftUI
 
 var koin: Koin_coreKoin = {
     let userDefaults = UserDefaults(suiteName: "application_user_defaults")!
@@ -19,8 +19,8 @@ var koin: Koin_coreKoin = {
 }()
 
 extension Koin_coreKoin {
-    // swiftlint:disable force_cast
     func get<T>() -> T {
+        // swiftlint:disable:next force_cast
         return koin.getDependency(objCObject: T.self) as! T
     }
 }
