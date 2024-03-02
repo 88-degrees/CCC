@@ -238,7 +238,3 @@ graph TD;
 <a href="https://brianmacdonald.github.io/Ethonate/address#0xD5645363C02044482983E60a58eb8A0a8DA2588C">
   <img style="width:111px" src="https://brianmacdonald.github.io/Ethonate/svg/eth-donate-blue.svg" />
 </a>
-
-<a href="https://donate.cafe/Tenet">
-  <img style="width:111px" src="https://newbie.zeromesh.net/donate.7.6.svg" />
-</a>
